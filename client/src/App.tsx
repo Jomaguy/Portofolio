@@ -8,6 +8,7 @@ import Projects from "@/pages/projects";
 import About from "@/pages/about";
 import Contact from "@/pages/contact";
 import Resume from "@/pages/resume";
+import Services from "@/pages/services";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import { NavBar } from "@/components/nav-bar";
@@ -18,6 +19,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/projects" component={Projects} />
+      <Route path="/services" component={Services} />
       <Route path="/about" component={About} />
       <Route path="/resume" component={Resume} />
       <Route path="/contact" component={Contact} />

@@ -1,6 +1,8 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import bcrypt from "bcryptjs";
+import { storage } from "./storage";
 
 const app = express();
 app.use(express.json());
@@ -36,7 +38,37 @@ app.use((req, res, next) => {
   next();
 });
 
+// Create a default admin account
+async function createDefaultAdmin() {
+  try {
+    const username = "admin";
+    const password = "admin123";
+    
+    // Check if admin already exists
+    const existingAdmin = await storage.getAdminByUsername(username);
+    if (!existingAdmin) {
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 10);
+      
+      // Create the admin account
+      await storage.createAdmin({
+        username,
+        password: hashedPassword,
+      });
+      
+      log("Default admin account created (username: admin, password: admin123)");
+    } else {
+      log("Default admin account already exists");
+    }
+  } catch (error) {
+    console.error("Error creating default admin account:", error);
+  }
+}
+
 (async () => {
+  // Create default admin account
+  await createDefaultAdmin();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { Github, Linkedin, Mail } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
         <div className="flex flex-col items-center space-y-8 text-center">
           <div className="space-y-4">
             <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl/none">
-              John Doe
+              Jonathan Mahrt Guyou
             </h1>
             <p className="mx-auto max-w-[800px] text-gray-500 text-xl md:text-2xl dark:text-gray-400 mt-4">
               Full Stack Software Engineer specialized in building scalable web applications
@@ -30,19 +30,14 @@ export default function Home() {
             </Link>
           </div>
           <div className="flex space-x-8 mt-16">
-            <a href="https://github.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="icon" className="h-12 w-12">
                 <Github className="h-6 w-6" />
               </Button>
             </a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer">
               <Button variant="ghost" size="icon" className="h-12 w-12">
                 <Linkedin className="h-6 w-6" />
-              </Button>
-            </a>
-            <a href="mailto:contact@example.com">
-              <Button variant="ghost" size="icon" className="h-12 w-12">
-                <Mail className="h-6 w-6" />
               </Button>
             </a>
           </div>

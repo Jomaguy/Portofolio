@@ -98,6 +98,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(projects);
   });
 
+  // Public Projects API endpoint
+  app.get("/api/projects", async (req, res) => {
+    const projects = await storage.getProjects();
+    res.json(projects);
+  });
+
   app.post("/api/admin/projects", isAuthenticated, async (req, res) => {
     try {
       const projectData = insertProjectSchema.parse(req.body);

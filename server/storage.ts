@@ -9,6 +9,7 @@ export interface IStorage {
   deleteProject(id: number): Promise<void>;
 
   // Admin operations
+  getAdmin(id: number): Promise<Admin | undefined>;
   getAdminByUsername(username: string): Promise<Admin | undefined>;
   createAdmin(admin: InsertAdmin): Promise<Admin>;
 
@@ -62,6 +63,10 @@ export class MemStorage implements IStorage {
 
   async deleteProject(id: number): Promise<void> {
     this.projects.delete(id);
+  }
+
+  async getAdmin(id: number): Promise<Admin | undefined> {
+    return this.admins.get(id);
   }
 
   async getAdminByUsername(username: string): Promise<Admin | undefined> {
