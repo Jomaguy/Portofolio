@@ -1,4 +1,4 @@
-import { type Project, type InsertProject, type Admin, type InsertAdmin } from "@shared/schema";
+import { type Project, type InsertProject, type Admin, type InsertAdmin, type User, type InsertUser } from "@shared/schema";
 
 export interface IStorage {
   // Project operations
@@ -46,7 +46,12 @@ export class MemStorage implements IStorage {
 
   async createProject(insertProject: InsertProject): Promise<Project> {
     const id = this.currentProjectId++;
-    const project: Project = { ...insertProject, id };
+    const project: Project = { 
+      ...insertProject, 
+      id,
+      link: insertProject.link || null,
+      github: insertProject.github || null
+    };
     this.projects.set(id, project);
     return project;
   }
@@ -101,5 +106,3 @@ export class MemStorage implements IStorage {
 }
 
 export const storage = new MemStorage();
-
-import { users, type User, type InsertUser } from "@shared/schema";

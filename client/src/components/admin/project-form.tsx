@@ -172,7 +172,7 @@ export function ProjectForm() {
                 <FormItem>
                   <FormLabel>Demo Link (optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,7 +186,7 @@ export function ProjectForm() {
                 <FormItem>
                   <FormLabel>GitHub Link (optional)</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input {...field} value={field.value || ''} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

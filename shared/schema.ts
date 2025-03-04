@@ -44,6 +44,18 @@ export type ChatMessage = typeof chatMessages.$inferSelect;
 
 export type ProjectCategory = "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Other";
 
+// User types (for backward compatibility)
+export interface User {
+  id: number;
+  username: string;
+  password: string;
+}
+
+export interface InsertUser {
+  username: string;
+  password: string;
+}
+
 // Sample project data for development
 export const projectData: Project[] = [
   {
