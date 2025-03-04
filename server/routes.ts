@@ -140,10 +140,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const response = await getChatResponse(chatHistory);
 
+      if (!response || !response.content) {
+        throw new Error("Invalid response from AI service");
+      }
+
       res.json({ message: response.content });
     } catch (error) {
       console.error("Chat error:", error);
-      res.status(500).json({ message: "Failed to process chat message" });
+      res.status(500).json({ 
+        message: "Failed to process chat message",
+        error: error instanceof Error ? error.message : "Unknown error"
+      });
     }
   });
 
