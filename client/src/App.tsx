@@ -11,6 +11,7 @@ import Resume from "@/pages/resume";
 import AdminLogin from "@/pages/admin/login";
 import AdminDashboard from "@/pages/admin/dashboard";
 import { NavBar } from "@/components/nav-bar";
+import { ChatInterface } from "@/components/chat-interface";
 
 function Router() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <main>
           <Router />
         </main>
+        <ChatInterface />
       </div>
       <Toaster />
     </QueryClientProvider>

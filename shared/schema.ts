@@ -1,4 +1,4 @@
-import { pgTable, text, serial, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -19,6 +19,14 @@ export const admins = pgTable("admins", {
   password: text("password").notNull(),
 });
 
+export const chatMessages = pgTable("chat_messages", {
+  id: serial("id").primaryKey(),
+  role: text("role").notNull(),
+  content: text("content").notNull(),
+  timestamp: timestamp("timestamp").defaultNow().notNull(),
+  sessionId: text("session_id").notNull(),
+});
+
 export const insertProjectSchema = createInsertSchema(projects);
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
@@ -30,8 +38,13 @@ export const insertAdminSchema = createInsertSchema(admins).pick({
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type Admin = typeof admins.$inferSelect;
 
+export const insertChatMessageSchema = createInsertSchema(chatMessages);
+export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
+export type ChatMessage = typeof chatMessages.$inferSelect;
+
 export type ProjectCategory = "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Other";
 
+// Sample project data for development
 export const projectData: Project[] = [
   {
     id: 1,
@@ -54,7 +67,7 @@ export const projectData: Project[] = [
     github: "https://github.com/example/erp"
   },
   {
-    id: 3, 
+    id: 3,
     title: "E-commerce Mobile App",
     description: "Cross-platform mobile shopping application",
     image: "https://images.unsplash.com/photo-1739514984003-330f7c1d2007",
@@ -67,7 +80,7 @@ export const projectData: Project[] = [
     id: 4,
     title: "Cloud Infrastructure Automation",
     description: "Infrastructure as code solution for cloud deployments",
-    image: "https://images.unsplash.com/photo-1510759395231-72b17d622279", 
+    image: "https://images.unsplash.com/photo-1510759395231-72b17d622279",
     technologies: ["Terraform", "AWS", "Kubernetes", "Go"],
     category: "Other",
     link: "https://infra.example.com",
