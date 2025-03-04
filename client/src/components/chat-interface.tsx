@@ -38,14 +38,14 @@ export function ChatInterface() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest("POST", "/api/chat", {
+      const response = await apiRequest<{ message: string }>("POST", "/api/chat", {
         message: userMessage,
         sessionId,
       });
-      const data = await response.json();
-      
-      setMessages((prev) => [...prev, { role: "assistant", content: data.message }]);
+
+      setMessages((prev) => [...prev, { role: "assistant", content: response.message }]);
     } catch (error) {
+      console.error("Chat error:", error);
       toast({
         variant: "destructive",
         title: "Error",

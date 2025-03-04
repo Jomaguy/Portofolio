@@ -21,27 +21,14 @@ Always be helpful and guide users to the most relevant information based on thei
 
 export async function getChatResponse(messages: { role: string; content: string }[]) {
   try {
-    // Get the model
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const chat = model.startChat();
 
-    // Start a chat
-    const chat = model.startChat({
-      history: [
-        {
-          role: "user",
-          parts: SYSTEM_PROMPT,
-        },
-        {
-          role: "model",
-          parts: "I understand my role as an AI butler/concierge for the portfolio website. I will help users navigate the site, provide information about projects and experience, and maintain a professional tone.",
-        },
-      ],
-    });
+    // Send the system prompt first
+    await chat.sendMessage(SYSTEM_PROMPT);
 
-    // Add user's message
+    // Send the user's message
     const userMessage = messages[messages.length - 1].content;
-
-    // Send message and get response
     const result = await chat.sendMessage(userMessage);
     const response = await result.response;
 
