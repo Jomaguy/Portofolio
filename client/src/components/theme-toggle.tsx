@@ -9,14 +9,14 @@ import {
 import { useEffect, useState } from "react";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState("system");
+  const [theme, setTheme] = useState<"light" | "dark" | "system">("system");
 
   useEffect(() => {
     const doc = window.document.documentElement;
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
       ? "dark"
       : "light";
-    
+
     doc.classList.remove("light", "dark");
     doc.classList.add(theme === "system" ? systemTheme : theme);
   }, [theme]);
