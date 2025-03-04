@@ -5,44 +5,44 @@ import { Github, Linkedin, Mail } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center py-12 md:py-24">
+    <div className="flex min-h-[calc(100vh-3.5rem)] flex-col items-center justify-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="container px-4 md:px-6"
+        className="container px-4 md:px-6 max-w-5xl"
       >
-        <div className="flex flex-col items-center space-y-4 text-center">
-          <div className="space-y-2">
-            <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl/none">
+        <div className="flex flex-col items-center space-y-8 text-center">
+          <div className="space-y-4">
+            <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl/none">
               John Doe
             </h1>
-            <p className="mx-auto max-w-[700px] text-gray-500 md:text-xl dark:text-gray-400">
+            <p className="mx-auto max-w-[800px] text-gray-500 text-xl md:text-2xl dark:text-gray-400 mt-4">
               Full Stack Software Engineer specialized in building scalable web applications
             </p>
           </div>
-          <div className="space-x-4">
+          <div className="space-x-6 mt-10">
             <Link href="/projects">
-              <Button size="lg">View Projects</Button>
+              <Button size="lg" className="text-lg px-8 py-6 h-auto">View Projects</Button>
             </Link>
             <Link href="/about">
-              <Button variant="outline" size="lg">About Me</Button>
+              <Button variant="outline" size="lg" className="text-lg px-8 py-6 h-auto">About Me</Button>
             </Link>
           </div>
-          <div className="flex space-x-4 mt-8">
+          <div className="flex space-x-8 mt-16">
             <a href="https://github.com" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="icon">
-                <Github className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-12 w-12">
+                <Github className="h-6 w-6" />
               </Button>
             </a>
             <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="icon">
-                <Linkedin className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-12 w-12">
+                <Linkedin className="h-6 w-6" />
               </Button>
             </a>
             <a href="mailto:contact@example.com">
-              <Button variant="ghost" size="icon">
-                <Mail className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-12 w-12">
+                <Mail className="h-6 w-6" />
               </Button>
             </a>
           </div>
