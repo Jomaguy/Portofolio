@@ -20,6 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { insertProjectSchema, type InsertProject, type ProjectCategory } from "@shared/schema";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 

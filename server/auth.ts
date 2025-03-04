@@ -4,6 +4,7 @@ import { Strategy as LocalStrategy } from "passport-local";
 import session from "express-session";
 import MemoryStore from "memorystore";
 import { storage } from "./storage";
+import type { Express } from "express";
 
 const SessionStore = MemoryStore(session);
 
@@ -57,7 +58,7 @@ export function setupAuth(app: Express) {
   // Deserialize admin from session
   passport.deserializeUser(async (id: number, done) => {
     try {
-      const admin = await storage.getAdminByUsername(id.toString());
+      const admin = await storage.getAdmin(id);
       done(null, admin);
     } catch (error) {
       done(error);
