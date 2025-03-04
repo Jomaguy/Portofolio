@@ -6,6 +6,7 @@ import { z } from "zod";
 import bcrypt from "bcryptjs";
 import { setupAuth } from "./auth";
 import { insertProjectSchema } from "@shared/schema";
+import { getChatResponse } from "./lib/openai";
 
 const contactSchema = z.object({
   name: z.string().min(1),
@@ -16,6 +17,11 @@ const contactSchema = z.object({
 const loginSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(6),
+});
+
+const chatMessageSchema = z.object({
+  message: z.string().min(1),
+  sessionId: z.string().min(1),
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -120,6 +126,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ message: "Project deleted successfully" });
     } catch (error) {
       res.status(400).json({ message: "Failed to delete project" });
+    }
+  });
+
+  // Chat endpoint
+  app.post("/api/chat", async (req, res) => {
+    try {
+      const { message, sessionId } = chatMessageSchema.parse(req.body);
+
+      const chatHistory = [
+        { role: "user", content: message }
+      ];
+
+      const response = await getChatResponse(chatHistory);
+
+      res.json({ message: response.content });
+    } catch (error) {
+      console.error("Chat error:", error);
+      res.status(500).json({ message: "Failed to process chat message" });
     }
   });
 
