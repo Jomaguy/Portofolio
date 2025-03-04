@@ -24,11 +24,9 @@ export async function getChatResponse(messages: { role: string; content: string 
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
     const result = await model.generateContent([
       {
-        role: "user",
         parts: [{ text: SYSTEM_PROMPT }],
       },
       {
-        role: "user",
         parts: [{ text: messages[messages.length - 1].content }],
       },
     ]);
