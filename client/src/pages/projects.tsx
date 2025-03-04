@@ -7,11 +7,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { projectData } from "@shared/schema";
+import { projectData, ProjectCategory } from "@shared/schema";
 import { Github, Link as LinkIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState } from "react";
 
 export default function Projects() {
+  const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | "All">("All");
+  const categories: (ProjectCategory | "All")[] = ["All", "Web Apps", "Mobile Apps", "Chrome Extensions", "Other"];
+
+  const filteredProjects = selectedCategory === "All" 
+    ? projectData 
+    : projectData.filter(project => project.category === selectedCategory);
+
   return (
     <div className="container py-12 md:py-24">
       <motion.div
@@ -20,8 +29,23 @@ export default function Projects() {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-3xl font-bold tracking-tighter mb-8">Projects</h1>
+
+        <Tabs defaultValue="All" className="mb-8">
+          <TabsList className="w-full justify-start">
+            {categories.map((category) => (
+              <TabsTrigger
+                key={category}
+                value={category}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+
         <div className="grid gap-6 md:grid-cols-2">
-          {projectData.map((project, index) => (
+          {filteredProjects.map((project, index) => (
             <motion.div
               key={project.id}
               initial={{ opacity: 0, y: 20 }}
@@ -37,13 +61,16 @@ export default function Projects() {
                   />
                 </div>
                 <CardHeader>
-                  <CardTitle>{project.title}</CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>{project.title}</CardTitle>
+                    <Badge variant="secondary">{project.category}</Badge>
+                  </div>
                   <CardDescription>{project.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2 mb-4">
                     {project.technologies.map((tech) => (
-                      <Badge key={tech} variant="secondary">
+                      <Badge key={tech} variant="outline">
                         {tech}
                       </Badge>
                     ))}
