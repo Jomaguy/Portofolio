@@ -22,14 +22,17 @@ Always be helpful and guide users to the most relevant information based on thei
 export async function getChatResponse(messages: { role: string; content: string }[]) {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    const chat = model.startChat();
+    const result = await model.generateContent([
+      {
+        role: "user",
+        parts: [{ text: SYSTEM_PROMPT }],
+      },
+      {
+        role: "user",
+        parts: [{ text: messages[messages.length - 1].content }],
+      },
+    ]);
 
-    // Send the system prompt first
-    await chat.sendMessage(SYSTEM_PROMPT);
-
-    // Send the user's message
-    const userMessage = messages[messages.length - 1].content;
-    const result = await chat.sendMessage(userMessage);
     const response = await result.response;
 
     return {
