@@ -8,7 +8,8 @@ import { ThemeToggle } from "./theme-toggle";
 const routes = [
   { href: "/", label: "Home" },
   { href: "/projects", label: "Projects" },
-  { href: "/about", label: "About" }
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" }
 ];
 
 export function NavBar() {
