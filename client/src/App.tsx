@@ -33,7 +33,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <div className="min-h-screen bg-background font-sans antialiased">
         <NavBar />
-        <main>
+        <main className="flex-1 w-full">
           <Router />
         </main>
         <ChatInterface />
