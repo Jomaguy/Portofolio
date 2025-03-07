@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +14,20 @@ import { MessageCircle, Send, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { nanoid } from "nanoid";
+import { useQuery } from "@tanstack/react-query";
+import { getQueryFn } from "@/lib/queryClient";
+import { type Project } from "@shared/schema";
+
+// Define the Puter type for TypeScript
+declare global {
+  interface Window {
+    puter?: {
+      ai: {
+        chat: (prompt: any, options: any) => Promise<any>;
+      };
+    };
+  }
+}
 
 interface Message {
   role: "user" | "assistant";
@@ -25,8 +39,31 @@ export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPuterAvailable, setIsPuterAvailable] = useState(false);
   const { toast } = useToast();
   const [sessionId] = useState(() => nanoid());
+
+  // Fetch projects to include in the context for the AI
+  const { data: projects = [] } = useQuery<Project[]>({
+    queryKey: ["/api/projects"],
+    queryFn: getQueryFn<Project[]>({ on401: "throw" }),
+  });
+
+  // Check if Puter.js is available
+  useEffect(() => {
+    const checkPuter = () => {
+      if (window.puter) {
+        setIsPuterAvailable(true);
+      }
+    };
+
+    // Check immediately
+    checkPuter();
+
+    // Also check after a short delay to allow for script loading
+    const timer = setTimeout(checkPuter, 1000);
+    return () => clearTimeout(timer);
+  }, []);
 
   async function sendMessage(e: React.FormEvent) {
     e.preventDefault();
@@ -38,12 +75,93 @@ export function ChatInterface() {
     setIsLoading(true);
 
     try {
-      const response = await apiRequest<{ message: string }>("POST", "/api/chat", {
-        message: userMessage,
-        sessionId,
-      });
+      if (isPuterAvailable && window.puter) {
+        // Use Puter.js with Claude 3.5 Sonnet
+        
+        // Create a project context string for the AI
+        const projectsContext = projects.map(p => 
+          `Project: ${p.title}
+          Description: ${p.description}
+          Technologies: ${p.technologies.join(", ")}
+          Category: ${p.category}
+          Links: ${p.link ? `Demo: ${p.link}` : ""} ${p.github ? `GitHub: ${p.github}` : ""}`
+        ).join("\n\n");
+        
+        const systemPrompt = `You are an AI butler/concierge for a software engineer's portfolio website. Your role is to:
+          1. Help visitors navigate the website and find information
+          2. Answer questions about the portfolio owner's projects, skills, and experience
+          3. Provide detailed technical explanations when asked about specific projects
+          4. Maintain a professional yet friendly tone
+          5. Direct users to relevant sections of the website (e.g., /projects, /resume, /contact)
+          
+          Here are the main sections of the website:
+          - Home (/): Overview and introduction
+          - Projects (/projects): Showcase of technical projects
+          - About (/about): Background, skills, and experience
+          - Resume (/resume): Detailed professional experience
+          - Contact (/contact): Contact form for reaching out
+          
+          Here are the projects in the portfolio:
+          ${projectsContext}
+          
+          Always be helpful and guide users to the most relevant information based on their interests.`;
+        
+        // Format the conversation for Claude
+        const formattedMessages = [
+          { role: "system", content: systemPrompt },
+          ...messages.map(m => ({ role: m.role, content: m.content })),
+          { role: "user", content: userMessage }
+        ];
+        
+        try {
+          // First try with streaming for better UX
+          const response = await window.puter.ai.chat(
+            formattedMessages,
+            { model: 'claude-3-5-sonnet', stream: true }
+          );
+          
+          let fullResponse = "";
+          let hasStartedResponse = false;
+          
+          for await (const part of response) {
+            if (part?.text) {
+              fullResponse += part.text;
+              
+              // For the first chunk, add a new message
+              if (!hasStartedResponse) {
+                setMessages(prev => [...prev, { role: "assistant", content: fullResponse }]);
+                hasStartedResponse = true;
+              } else {
+                // For subsequent chunks, update the existing message
+                setMessages(prev => {
+                  const newMessages = [...prev];
+                  newMessages[newMessages.length - 1].content = fullResponse;
+                  return newMessages;
+                });
+              }
+            }
+          }
+        } catch (streamError) {
+          console.warn("Streaming failed, falling back to non-streaming mode", streamError);
+          
+          // Fallback to non-streaming if streaming fails
+          const response = await window.puter.ai.chat(
+            formattedMessages,
+            { model: 'claude-3-5-sonnet' }
+          );
+          
+          const aiResponse = response.message.content[0].text;
+          setMessages(prev => [...prev, { role: "assistant", content: aiResponse }]);
+        }
+      } else {
+        // Fallback to the original server-side implementation
+        const response = await apiRequest<{ message: string }>("POST", "/api/chat", {
+          message: userMessage,
+          sessionId,
+        });
 
-      setMessages((prev) => [...prev, { role: "assistant", content: response.message }]);
+        setMessages((prev) => [...prev, { role: "assistant", content: response.message }]);
+      }
     } catch (error) {
       console.error("Chat error:", error);
       toast({
@@ -68,7 +186,7 @@ export function ChatInterface() {
       </SheetTrigger>
       <SheetContent className="w-[400px] sm:w-[540px]">
         <SheetHeader>
-          <SheetTitle>AI Assistant</SheetTitle>
+          <SheetTitle>AI Assistant {isPuterAvailable ? "(Claude 3.5 Sonnet)" : ""}</SheetTitle>
         </SheetHeader>
         <div className="flex h-[calc(100vh-8rem)] flex-col gap-4">
           <ScrollArea className="flex-1 pr-4">
