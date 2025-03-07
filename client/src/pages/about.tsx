@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
+import profileImage from "../assets/images/profile.jpg";
 
 export default function About() {
   return (
@@ -13,7 +14,7 @@ export default function About() {
         <Card className="overflow-hidden">
           <CardContent className="p-0">
             <img
-              src="https://images.unsplash.com/photo-1507679799987-c73779587ccf"
+              src={profileImage}
               alt="Profile"
               className="w-full h-full object-cover"
             />
@@ -23,9 +24,9 @@ export default function About() {
           <div>
             <h1 className="text-3xl font-bold tracking-tighter mb-4">About Me</h1>
             <p className="text-lg text-muted-foreground">
-              I'm a Full Stack Software Engineer with over 5 years of experience building
-              scalable web applications. I specialize in React, Node.js, and cloud
-              technologies.
+              I'm a Full Stack Software Engineer with a Master's degree in Computer Science from Hofstra University. 
+              As a former Division 1 athlete and team captain, I bring strong leadership and teamwork skills to my 
+              software engineering projects. I specialize in full-stack development, AI implementation, and mobile app development.
             </p>
           </div>
           
@@ -34,33 +35,33 @@ export default function About() {
             <div className="grid gap-4 md:grid-cols-2">
               <Card>
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Frontend</h3>
+                  <h3 className="font-semibold mb-2">Programming</h3>
                   <p className="text-sm text-muted-foreground">
-                    React, TypeScript, Tailwind CSS, Next.js
+                    Python, Java, JavaScript, TypeScript, Swift, SQL
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Backend</h3>
+                  <h3 className="font-semibold mb-2">Languages</h3>
                   <p className="text-sm text-muted-foreground">
-                    Node.js, Express, PostgreSQL, GraphQL
+                    French (Native), Danish (Native), Spanish (Fluent), Catalan (Fluent), English (Fluent)
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Cloud & DevOps</h3>
+                  <h3 className="font-semibold mb-2">Frameworks & Technologies</h3>
                   <p className="text-sm text-muted-foreground">
-                    AWS, Docker, Kubernetes, CI/CD
+                    React, Next.js, Django, Firebase, Flask, PyTorch, Scikit-learn
                   </p>
                 </CardContent>
               </Card>
               <Card>
                 <CardContent className="pt-6">
-                  <h3 className="font-semibold mb-2">Tools & Methods</h3>
+                  <h3 className="font-semibold mb-2">Leadership</h3>
                   <p className="text-sm text-muted-foreground">
-                    Git, Agile, TDD, System Design
+                    Scrum Master, Team Leadership, Project Management, Agile Methodologies
                   </p>
                 </CardContent>
               </Card>

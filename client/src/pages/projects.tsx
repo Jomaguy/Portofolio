@@ -17,7 +17,7 @@ import { getQueryFn } from "@/lib/queryClient";
 
 export default function Projects() {
   const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | "All">("All");
-  const categories: (ProjectCategory | "All")[] = ["All", "Web Apps", "Mobile Apps", "Chrome Extensions", "Other"];
+  const categories: (ProjectCategory | "All")[] = ["All", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "Other"];
 
   // Fetch projects from the API
   const { data: projects = [], isLoading } = useQuery<Project[]>({
