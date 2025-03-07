@@ -42,7 +42,7 @@ export const insertChatMessageSchema = createInsertSchema(chatMessages);
 export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
 export type ChatMessage = typeof chatMessages.$inferSelect;
 
-export type ProjectCategory = "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Other";
+export type ProjectCategory = "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Cybersecurity" | "Other";
 
 // User types (for backward compatibility)
 export interface User {

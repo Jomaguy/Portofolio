@@ -31,7 +31,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export function ProjectForm() {
   const { toast } = useToast();
-  const categories: ProjectCategory[] = ["Web Apps", "Mobile Apps", "Chrome Extensions", "Other"];
+  const categories: ProjectCategory[] = ["Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "Other"];
 
   const form = useForm<InsertProject>({
     resolver: zodResolver(insertProjectSchema),
