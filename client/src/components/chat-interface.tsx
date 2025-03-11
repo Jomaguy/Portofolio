@@ -224,6 +224,12 @@ export function ChatInterface() {
     queryFn: getQueryFn<Project[]>({ on401: "throw" }),
   });
 
+  // Fetch resume data to include in the context for the AI
+  const { data: resume } = useQuery({
+    queryKey: ["/api/resume"],
+    queryFn: getQueryFn({ on401: "throw" }),
+  });
+
   // Check if Puter.js is available
   useEffect(() => {
     const checkPuter = () => {
@@ -262,6 +268,9 @@ export function ChatInterface() {
         Category: ${p.category}
         Links: ${p.link ? `Demo: ${p.link}` : ""} ${p.github ? `GitHub: ${p.github}` : ""}`
       ).join("\n\n");
+
+      // Create a resume context string for the AI
+      const resumeContext = resume ? JSON.stringify(resume, null, 2) : "";
       
       const systemPrompt = `You are Albert, a professional AI butler for Jonathan Mahrt Guyou's portfolio website. You should maintain a polite, professional butler persona in your interactions.
 
@@ -286,7 +295,10 @@ export function ChatInterface() {
         
         Here are the specific projects in Jonathan's portfolio:
         ${projectsContext}
-        
+
+        Here is Jonathan's resume information:
+        ${resumeContext}
+
         Always introduce yourself as Albert, Jonathan's professional butler. Be helpful, informative, and guide users to the most relevant information based on their interests. Maintain a professional butler demeanor while avoiding overly deferential language.`;
       
       // Format the conversation for Claude

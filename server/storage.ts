@@ -1,6 +1,9 @@
-import { type Project, type InsertProject, type Admin, type InsertAdmin, type User, type InsertUser, projectData } from "@shared/schema";
+import { type Project, type InsertProject, type Admin, type InsertAdmin, type User, type InsertUser, projectData, type ProjectButton } from "@shared/schema";
 import fs from 'fs/promises';
 import path from 'path';
+import { readFile, writeFile } from "fs/promises";
+import { join } from "path";
+import { z } from "zod";
 
 export interface IStorage {
   // Project operations
@@ -19,6 +22,9 @@ export interface IStorage {
   getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+
+  // New operations
+  getResume(): Promise<any>;
 }
 
 export class MemStorage implements IStorage {
@@ -52,7 +58,10 @@ export class MemStorage implements IStorage {
       ...insertProject, 
       id,
       link: insertProject.link || null,
-      github: insertProject.github || null
+      github: insertProject.github || null,
+      videoWalkthrough: insertProject.videoWalkthrough || null,
+      details: insertProject.details || null,
+      buttons: (insertProject.buttons as ProjectButton[]) || null
     };
     this.projects.set(id, project);
     return project;
@@ -63,7 +72,15 @@ export class MemStorage implements IStorage {
     if (!existing) {
       throw new Error('Project not found');
     }
-    const updated = { ...existing, ...updates };
+    const updated: Project = { 
+      ...existing, 
+      ...updates,
+      link: updates.link ?? existing.link,
+      github: updates.github ?? existing.github,
+      videoWalkthrough: updates.videoWalkthrough ?? existing.videoWalkthrough,
+      details: updates.details ?? existing.details,
+      buttons: updates.buttons ? (updates.buttons as ProjectButton[]) : existing.buttons
+    };
     this.projects.set(id, updated);
     return updated;
   }
@@ -105,6 +122,11 @@ export class MemStorage implements IStorage {
     this.users.set(id, user);
     return user;
   }
+
+  async getResume(): Promise<any> {
+    // Implementation needed
+    throw new Error("Method not implemented");
+  }
 }
 
 export class FileStorage implements IStorage {
@@ -112,6 +134,7 @@ export class FileStorage implements IStorage {
   private projectsFile: string;
   private adminsFile: string;
   private usersFile: string;
+  private resumePath: string;
   private projects: Project[];
   private admins: Admin[];
   private users: User[];
@@ -124,6 +147,7 @@ export class FileStorage implements IStorage {
     this.projectsFile = path.join(dataDir, 'projects.json');
     this.adminsFile = path.join(dataDir, 'admins.json');
     this.usersFile = path.join(dataDir, 'users.json');
+    this.resumePath = path.join(dataDir, 'resume.json');
     this.projects = [];
     this.admins = [];
     this.users = [];
@@ -200,7 +224,10 @@ export class FileStorage implements IStorage {
       ...insertProject, 
       id,
       link: insertProject.link || null,
-      github: insertProject.github || null
+      github: insertProject.github || null,
+      videoWalkthrough: insertProject.videoWalkthrough || null,
+      details: insertProject.details || null,
+      buttons: (insertProject.buttons as ProjectButton[]) || null
     };
     this.projects.push(project);
     await this.saveProjects();
@@ -212,7 +239,16 @@ export class FileStorage implements IStorage {
     if (index === -1) {
       throw new Error('Project not found');
     }
-    const updated = { ...this.projects[index], ...updates };
+    const existing = this.projects[index];
+    const updated: Project = { 
+      ...existing, 
+      ...updates,
+      link: updates.link ?? existing.link,
+      github: updates.github ?? existing.github,
+      videoWalkthrough: updates.videoWalkthrough ?? existing.videoWalkthrough,
+      details: updates.details ?? existing.details,
+      buttons: updates.buttons ? (updates.buttons as ProjectButton[]) : existing.buttons
+    };
     this.projects[index] = updated;
     await this.saveProjects();
     return updated;
@@ -256,6 +292,16 @@ export class FileStorage implements IStorage {
     this.users.push(user);
     await this.saveUsers();
     return user;
+  }
+
+  async getResume() {
+    try {
+      const content = await readFile(this.resumePath, "utf-8");
+      return JSON.parse(content);
+    } catch (error) {
+      console.error("Error reading resume:", error);
+      return null;
+    }
   }
 }
 

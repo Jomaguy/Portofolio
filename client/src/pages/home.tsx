@@ -130,30 +130,67 @@ export default function Home() {
                         ))}
                       </div>
                       <div className="flex flex-wrap gap-2">
-                        {project.link && (
-                          <a href={project.link} target="_blank" rel="noopener noreferrer">
-                            <Button variant="outline" size="sm" className="mb-2">
-                              <LinkIcon className="h-4 w-4 mr-2" />
-                              Demo
-                            </Button>
-                          </a>
+                        {project.buttons ? (
+                          // Custom buttons structure
+                          project.buttons.map((button, idx) => (
+                            <a key={idx} href={button.url} target="_blank" rel="noopener noreferrer">
+                              <Button variant="outline" size="sm" className="mb-2">
+                                {button.label === 'Code' && <Github className="h-4 w-4 mr-2" />}
+                                {button.label === 'Website' && <LinkIcon className="h-4 w-4 mr-2" />}
+                                {button.label === 'Details' && (
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                  </svg>
+                                )}
+                                {button.label}
+                              </Button>
+                            </a>
+                          ))
+                        ) : (
+                          // Standard button structure
+                          <>
+                            {project.link && (
+                              <a href={project.link} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm" className="mb-2">
+                                  <LinkIcon className="h-4 w-4 mr-2" />
+                                  Demo
+                                </Button>
+                              </a>
+                            )}
+                            {project.github && (
+                              <a href={project.github} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm" className="mb-2">
+                                  <Github className="h-4 w-4 mr-2" />
+                                  Code
+                                </Button>
+                              </a>
+                            )}
+                            {project.details && (
+                              <a href={project.details} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm" className="mb-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <path d="M12 16v-4"></path>
+                                    <path d="M12 8h.01"></path>
+                                  </svg>
+                                  Details
+                                </Button>
+                              </a>
+                            )}
+                            {project.videoWalkthrough && (
+                              <a href={project.videoWalkthrough} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm" className="mb-2">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2">
+                                    <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                                  </svg>
+                                  Walkthrough
+                                </Button>
+                              </a>
+                            )}
+                          </>
                         )}
-                        {project.github && (
-                          <a href={project.github} target="_blank" rel="noopener noreferrer">
-                            <Button variant="outline" size="sm" className="mb-2">
-                              <Github className="h-4 w-4 mr-2" />
-                              Code
-                            </Button>
-                          </a>
-                        )}
-                        <Button variant="outline" size="sm" className="mb-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
-                          Details
-                        </Button>
-                        <Button variant="outline" size="sm" className="mb-2">
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                          Walkthrough
-                        </Button>
                       </div>
                     </CardContent>
                   </Card>

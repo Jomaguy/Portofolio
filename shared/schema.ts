@@ -1,6 +1,11 @@
-import { pgTable, text, serial, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+
+export interface ProjectButton {
+  label: string;
+  url: string;
+}
 
 export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
@@ -11,7 +16,9 @@ export const projects = pgTable("projects", {
   category: text("category").notNull(),
   link: text("link"),
   github: text("github"),
-  videoWalkthrough: text("video_walkthrough")
+  videoWalkthrough: text("video_walkthrough"),
+  details: text("details"),
+  buttons: jsonb("buttons").array().$type<ProjectButton[]>()
 });
 
 export const admins = pgTable("admins", {
@@ -48,58 +55,16 @@ export interface InsertUser {
 // Sample project data for development
 export const projectData: Project[] = [
   {
-    id: 1,
-    title: "AI-Powered Analytics Dashboard",
-    description: "Real-time analytics platform with machine learning insights",
-    image: "https://images.unsplash.com/photo-1508873535684-277a3cbcc4e8",
-    technologies: ["React", "Python", "TensorFlow", "AWS"],
+    id: 6,
+    title: "VS Code-like Web IDE",
+    description: "Modern web-based IDE using Monaco Editor and Golden Layout",
+    image: "https://images.unsplash.com/photo-1592609931095-54a2168ae893",
+    technologies: ["JavaScript", "Monaco Editor", "Golden Layout", "Semantic UI", "Event-Driven Architecture"],
     category: "Web Apps",
-    link: "https://analytics.example.com",
-    github: "https://github.com/example/analytics",
-    videoWalkthrough: null
-  },
-  {
-    id: 2,
-    title: "Enterprise Resource Planning System",
-    description: "Comprehensive ERP solution for business management",
-    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40",
-    technologies: ["TypeScript", "Node.js", "PostgreSQL", "Docker"],
-    category: "Web Apps",
-    link: "https://erp.example.com",
-    github: "https://github.com/example/erp",
-    videoWalkthrough: null
-  },
-  {
-    id: 3,
-    title: "E-commerce Mobile App",
-    description: "Cross-platform mobile shopping application",
-    image: "https://images.unsplash.com/photo-1739514984003-330f7c1d2007",
-    technologies: ["React Native", "GraphQL", "MongoDB", "Firebase"],
-    category: "Mobile Apps",
-    link: "https://shop.example.com",
-    github: "https://github.com/example/shop",
-    videoWalkthrough: null
-  },
-  {
-    id: 4,
-    title: "Cloud Infrastructure Automation",
-    description: "Infrastructure as code solution for cloud deployments",
-    image: "https://images.unsplash.com/photo-1510759395231-72b17d622279",
-    technologies: ["Terraform", "AWS", "Kubernetes", "Go"],
-    category: "Other",
-    link: "https://infra.example.com",
-    github: "https://github.com/example/infra",
-    videoWalkthrough: null
-  },
-  {
-    id: 5,
-    title: "Tab Manager Pro",
-    description: "Chrome extension for efficient tab management and organization",
-    image: "https://images.unsplash.com/photo-1457305237443-44c3d5a30b89",
-    technologies: ["JavaScript", "Chrome API", "HTML", "CSS"],
-    category: "Chrome Extensions",
-    link: "https://chrome.google.com/webstore/example",
-    github: "https://github.com/example/tab-manager",
-    videoWalkthrough: null
+    link: "https://web-ide.example.com",
+    github: "https://github.com/example/web-ide",
+    videoWalkthrough: null,
+    details: null,
+    buttons: null
   }
 ];

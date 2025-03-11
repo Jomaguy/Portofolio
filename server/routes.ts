@@ -73,6 +73,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(projects);
   });
 
+  // Resume API endpoint
+  app.get("/api/resume", async (req, res) => {
+    const resume = await storage.getResume();
+    res.json(resume);
+  });
+
   // Create HTTP server
   const server = createServer(app);
   return server;

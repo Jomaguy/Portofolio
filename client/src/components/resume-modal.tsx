@@ -6,7 +6,6 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Download } from "lucide-react";
-import { useEffect, useRef } from "react";
 
 interface ResumeModalProps {
   open: boolean;
@@ -14,20 +13,6 @@ interface ResumeModalProps {
 }
 
 export function ResumeModal({ open, onOpenChange }: ResumeModalProps) {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  useEffect(() => {
-    // When the modal opens, adjust the iframe if needed
-    if (open && iframeRef.current) {
-      // This forces a reflow which can help with rendering issues
-      const iframe = iframeRef.current;
-      iframe.style.display = 'none';
-      setTimeout(() => {
-        iframe.style.display = 'block';
-      }, 10);
-    }
-  }, [open]);
-
   const handleDownload = () => {
     // Create a link element
     const link = document.createElement('a');
@@ -40,7 +25,7 @@ export function ResumeModal({ open, onOpenChange }: ResumeModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[85vw] md:max-w-[60vw] lg:max-w-[50vw] xl:max-w-[45vw] p-0 max-h-[90vh] h-[90vh] overflow-hidden bg-black">
+      <DialogContent className="sm:max-w-[90vw] md:max-w-[60vw] lg:max-w-[55vw] xl:max-w-[50vw] p-0 max-h-[90vh] h-[90vh] overflow-hidden bg-black">
         <div className="bg-black h-full flex flex-col">
           <DialogHeader className="flex flex-row items-center justify-between p-3 border-b bg-white">
             <DialogTitle className="text-xl font-bold tracking-tighter">Resume</DialogTitle>
@@ -54,10 +39,9 @@ export function ResumeModal({ open, onOpenChange }: ResumeModalProps) {
             </Button>
           </DialogHeader>
           
-          <div className="flex-1 w-full h-[calc(100%-50px)] bg-black overflow-hidden">
+          <div className="flex-1 w-full h-[calc(100%-50px)] bg-black flex items-center justify-center p-0">
             <iframe 
-              ref={iframeRef}
-              src="/Resume.pdf#toolbar=0&navpanes=0&scrollbar=0"
+              src="/Resume.pdf#toolbar=0&navpanes=0&scrollbar=0&view=FitH"
               title="Resume"
               className="w-full h-full"
               style={{
@@ -65,10 +49,9 @@ export function ResumeModal({ open, onOpenChange }: ResumeModalProps) {
                 margin: 0,
                 padding: 0,
                 backgroundColor: 'black',
-                width: '100%',
-                height: '100%',
-                minHeight: '100%',
-                minWidth: '100%'
+                display: 'block',
+                transform: 'scale(0.95)',
+                transformOrigin: 'center'
               }}
             />
           </div>
