@@ -29,7 +29,7 @@ export default function Resume() {
       >
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold tracking-tighter">Resume</h1>
-          <Button onClick={handleDownload} className="flex items-center gap-2">
+          <Button onClick={handleDownload} className="flex items-center gap-2 rounded-full border-2 border-primary hover:bg-muted/50">
             <Download className="h-4 w-4" />
             Download Resume
           </Button>

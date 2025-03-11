@@ -10,21 +10,14 @@ export const projects = pgTable("projects", {
   technologies: text("technologies").array().notNull(),
   category: text("category").notNull(),
   link: text("link"),
-  github: text("github")
+  github: text("github"),
+  videoWalkthrough: text("video_walkthrough")
 });
 
 export const admins = pgTable("admins", {
   id: serial("id").primaryKey(),
   username: text("username").notNull().unique(),
   password: text("password").notNull(),
-});
-
-export const chatMessages = pgTable("chat_messages", {
-  id: serial("id").primaryKey(),
-  role: text("role").notNull(),
-  content: text("content").notNull(),
-  timestamp: timestamp("timestamp").defaultNow().notNull(),
-  sessionId: text("session_id").notNull(),
 });
 
 export const insertProjectSchema = createInsertSchema(projects);
@@ -37,10 +30,6 @@ export const insertAdminSchema = createInsertSchema(admins).pick({
 });
 export type InsertAdmin = z.infer<typeof insertAdminSchema>;
 export type Admin = typeof admins.$inferSelect;
-
-export const insertChatMessageSchema = createInsertSchema(chatMessages);
-export type InsertChatMessage = z.infer<typeof insertChatMessageSchema>;
-export type ChatMessage = typeof chatMessages.$inferSelect;
 
 export type ProjectCategory = "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Cybersecurity" | "Other";
 
@@ -66,7 +55,8 @@ export const projectData: Project[] = [
     technologies: ["React", "Python", "TensorFlow", "AWS"],
     category: "Web Apps",
     link: "https://analytics.example.com",
-    github: "https://github.com/example/analytics"
+    github: "https://github.com/example/analytics",
+    videoWalkthrough: null
   },
   {
     id: 2,
@@ -76,7 +66,8 @@ export const projectData: Project[] = [
     technologies: ["TypeScript", "Node.js", "PostgreSQL", "Docker"],
     category: "Web Apps",
     link: "https://erp.example.com",
-    github: "https://github.com/example/erp"
+    github: "https://github.com/example/erp",
+    videoWalkthrough: null
   },
   {
     id: 3,
@@ -86,7 +77,8 @@ export const projectData: Project[] = [
     technologies: ["React Native", "GraphQL", "MongoDB", "Firebase"],
     category: "Mobile Apps",
     link: "https://shop.example.com",
-    github: "https://github.com/example/shop"
+    github: "https://github.com/example/shop",
+    videoWalkthrough: null
   },
   {
     id: 4,
@@ -96,7 +88,8 @@ export const projectData: Project[] = [
     technologies: ["Terraform", "AWS", "Kubernetes", "Go"],
     category: "Other",
     link: "https://infra.example.com",
-    github: "https://github.com/example/infra"
+    github: "https://github.com/example/infra",
+    videoWalkthrough: null
   },
   {
     id: 5,
@@ -106,6 +99,7 @@ export const projectData: Project[] = [
     technologies: ["JavaScript", "Chrome API", "HTML", "CSS"],
     category: "Chrome Extensions",
     link: "https://chrome.google.com/webstore/example",
-    github: "https://github.com/example/tab-manager"
+    github: "https://github.com/example/tab-manager",
+    videoWalkthrough: null
   }
 ];

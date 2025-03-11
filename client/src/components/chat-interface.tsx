@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,8 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MessageCircle, Send, Loader2 } from "lucide-react";
+import { Send, Loader2, Maximize2, Minimize2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import { nanoid } from "nanoid";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
@@ -34,14 +33,190 @@ interface Message {
   content: string;
 }
 
+// Helper function to format message content with proper paragraph breaks, list formatting, and code blocks
+const formatMessageContent = (content: string) => {
+  // Check if the content contains code blocks
+  const hasCodeBlocks = /```[\s\S]*?```/.test(content);
+  
+  if (hasCodeBlocks) {
+    const segments = [];
+    let lastIndex = 0;
+    let inCodeBlock = false;
+    let currentLanguage = '';
+    let currentContent = '';
+    
+    // Find all code blocks
+    const codeBlockRegex = /```(\w*)\n?([\s\S]*?)```/g;
+    let match;
+    
+    while ((match = codeBlockRegex.exec(content)) !== null) {
+      // Add text before the code block
+      if (match.index > lastIndex) {
+        const textBefore = content.substring(lastIndex, match.index);
+        if (textBefore.trim()) {
+          segments.push(
+            <div key={`text-${segments.length}`} className="mb-3">
+              {formatMessageContent(textBefore)}
+            </div>
+          );
+        }
+      }
+      
+      // Add the code block
+      const language = match[1] || 'plaintext';
+      const code = match[2];
+      
+      segments.push(
+        <div key={`code-${segments.length}`} className="mb-3 rounded bg-gray-100 dark:bg-gray-900 p-3 font-mono text-sm overflow-x-auto">
+          {code.split('\n').map((line, i) => (
+            <div key={i} className="whitespace-pre">
+              {line}
+            </div>
+          ))}
+        </div>
+      );
+      
+      lastIndex = match.index + match[0].length;
+    }
+    
+    // Add any remaining text after the last code block
+    if (lastIndex < content.length) {
+      const textAfter = content.substring(lastIndex);
+      if (textAfter.trim()) {
+        segments.push(
+          <div key={`text-${segments.length}`} className="mb-3">
+            {formatMessageContent(textAfter)}
+          </div>
+        );
+      }
+    }
+    
+    return segments;
+  }
+  
+  // Check if the content contains numbered lists (e.g., "1. Item")
+  const hasNumberedList = /^\d+\.\s.+/m.test(content);
+  // Check if the content contains bullet lists (e.g., "- Item" or "• Item")
+  const hasBulletList = /^[-•]\s.+/m.test(content);
+  
+  // If we have lists, do special formatting
+  if (hasNumberedList || hasBulletList) {
+    // Split by newlines
+    const lines = content.split(/\n/);
+    let inList = false;
+    let listItems: string[] = [];
+    let result: JSX.Element[] = [];
+    let currentParagraph: string[] = [];
+    
+    lines.forEach((line, index) => {
+      const isNumberedItem = /^\d+\.\s(.+)/.exec(line);
+      const isBulletItem = /^[-•]\s(.+)/.exec(line);
+      
+      if (isNumberedItem || isBulletItem) {
+        // If we were building a paragraph, add it to results
+        if (currentParagraph.length > 0) {
+          result.push(<p key={`p-${index}`} className="mb-2">{currentParagraph.join(' ')}</p>);
+          currentParagraph = [];
+        }
+        
+        // Start or continue a list
+        if (!inList) {
+          inList = true;
+          listItems = [];
+        }
+        
+        // Add the item text (without the bullet/number)
+        const itemText = isNumberedItem ? isNumberedItem[1] : isBulletItem![1];
+        listItems.push(itemText);
+      } else {
+        // End any current list
+        if (inList) {
+          const listType = hasNumberedList ? "ol" : "ul";
+          result.push(
+            listType === "ol" ? (
+              <ol key={`list-${index}`} className="list-decimal pl-5 mb-3 space-y-1">
+                {listItems.map((item, i) => <li key={i}>{item}</li>)}
+              </ol>
+            ) : (
+              <ul key={`list-${index}`} className="list-disc pl-5 mb-3 space-y-1">
+                {listItems.map((item, i) => <li key={i}>{item}</li>)}
+              </ul>
+            )
+          );
+          inList = false;
+          listItems = [];
+        }
+        
+        // Handle empty lines as paragraph breaks
+        if (line.trim() === '') {
+          if (currentParagraph.length > 0) {
+            result.push(<p key={`p-${index}`} className="mb-2">{currentParagraph.join(' ')}</p>);
+            currentParagraph = [];
+          }
+        } else {
+          // Add to current paragraph
+          currentParagraph.push(line);
+        }
+      }
+    });
+    
+    // Handle any remaining list
+    if (inList) {
+      const listType = hasNumberedList ? "ol" : "ul";
+      result.push(
+        listType === "ol" ? (
+          <ol key="list-end" className="list-decimal pl-5 mb-3 space-y-1">
+            {listItems.map((item, i) => <li key={i}>{item}</li>)}
+          </ol>
+        ) : (
+          <ul key="list-end" className="list-disc pl-5 mb-3 space-y-1">
+            {listItems.map((item, i) => <li key={i}>{item}</li>)}
+          </ul>
+        )
+      );
+    }
+    
+    // Handle any remaining paragraph text
+    if (currentParagraph.length > 0) {
+      result.push(<p key="p-end" className="mb-2">{currentParagraph.join(' ')}</p>);
+    }
+    
+    return result;
+  }
+  
+  // Regular paragraph handling (no lists or code blocks)
+  const paragraphs = content.split(/\n\n+/);
+  
+  if (paragraphs.length <= 1) {
+    // If there are no double newlines, try splitting by single newlines
+    const lines = content.split(/\n/);
+    if (lines.length > 1) {
+      return lines.map((line, i) => (
+        <p key={i} className={i > 0 ? "mt-2" : ""}>{line}</p>
+      ));
+    }
+    return <p>{content}</p>;
+  }
+  
+  return paragraphs.map((paragraph, i) => (
+    <p key={i} className={i > 0 ? "mt-3" : ""}>{paragraph}</p>
+  ));
+};
+
 export function ChatInterface() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isPuterAvailable, setIsPuterAvailable] = useState(false);
+  const [chatSize, setChatSize] = useState<'normal' | 'large'>('normal');
+  const [isResizing, setIsResizing] = useState(false);
+  const [customSize, setCustomSize] = useState({ width: 0, height: 0 });
   const { toast } = useToast();
   const [sessionId] = useState(() => nanoid());
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const initialResizePosition = useRef({ x: 0, y: 0 });
+  const initialSize = useRef({ width: 0, height: 0 });
 
   // Fetch projects to include in the context for the AI
   const { data: projects = [] } = useQuery<Project[]>({
@@ -75,162 +250,318 @@ export function ChatInterface() {
     setIsLoading(true);
 
     try {
-      if (isPuterAvailable && window.puter) {
-        // Use Puter.js with Claude 3.5 Sonnet
+      if (!isPuterAvailable || !window.puter) {
+        throw new Error("Puter.js is not available");
+      }
+      
+      // Create a project context string for the AI
+      const projectsContext = projects.map(p => 
+        `Project: ${p.title}
+        Description: ${p.description}
+        Technologies: ${p.technologies.join(", ")}
+        Category: ${p.category}
+        Links: ${p.link ? `Demo: ${p.link}` : ""} ${p.github ? `GitHub: ${p.github}` : ""}`
+      ).join("\n\n");
+      
+      const systemPrompt = `You are Albert, a professional AI butler for Jonathan Mahrt Guyou's portfolio website. You should maintain a polite, professional butler persona in your interactions.
+
+        Your role is to:
+        1. Help visitors navigate Jonathan's portfolio website and find information about him
+        2. Answer questions about Jonathan's projects, skills, and professional experience
+        3. Provide detailed technical explanations when asked about specific projects
+        4. Maintain a professional, courteous, and helpful butler tone
+        5. Assist visitors in contacting Jonathan or viewing his resume
         
-        // Create a project context string for the AI
-        const projectsContext = projects.map(p => 
-          `Project: ${p.title}
-          Description: ${p.description}
-          Technologies: ${p.technologies.join(", ")}
-          Category: ${p.category}
-          Links: ${p.link ? `Demo: ${p.link}` : ""} ${p.github ? `GitHub: ${p.github}` : ""}`
-        ).join("\n\n");
+        The website has a single-page design with the following sections:
+        - Home: The main page featuring Jonathan's profile and all his projects
+        - Resume: Available through the "Resume" button in the navigation bar (opens a modal)
+        - Contact: Available through the "Contact Me" button in the navigation bar (opens a contact form)
         
-        const systemPrompt = `You are an AI butler/concierge for a software engineer's portfolio website. Your role is to:
-          1. Help visitors navigate the website and find information
-          2. Answer questions about the portfolio owner's projects, skills, and experience
-          3. Provide detailed technical explanations when asked about specific projects
-          4. Maintain a professional yet friendly tone
-          5. Direct users to relevant sections of the website (e.g., /projects, /resume, /contact)
-          
-          Here are the main sections of the website:
-          - Home (/): Overview and introduction
-          - Projects (/projects): Showcase of technical projects
-          - About (/about): Background, skills, and experience
-          - Resume (/resume): Detailed professional experience
-          - Contact (/contact): Contact form for reaching out
-          
-          Here are the projects in the portfolio:
-          ${projectsContext}
-          
-          Always be helpful and guide users to the most relevant information based on their interests.`;
+        Projects are categorized as:
+        - Web Apps
+        - Mobile Apps
+        - Chrome Extensions
+        - Cybersecurity
+        - Other
         
-        // Format the conversation for Claude
-        const formattedMessages = [
-          { role: "system", content: systemPrompt },
-          ...messages.map(m => ({ role: m.role, content: m.content })),
-          { role: "user", content: userMessage }
-        ];
+        Here are the specific projects in Jonathan's portfolio:
+        ${projectsContext}
         
-        try {
-          // First try with streaming for better UX
-          const response = await window.puter.ai.chat(
-            formattedMessages,
-            { model: 'claude-3-5-sonnet', stream: true }
-          );
-          
-          let fullResponse = "";
-          let hasStartedResponse = false;
-          
-          for await (const part of response) {
-            if (part?.text) {
-              fullResponse += part.text;
-              
-              // For the first chunk, add a new message
-              if (!hasStartedResponse) {
-                setMessages(prev => [...prev, { role: "assistant", content: fullResponse }]);
-                hasStartedResponse = true;
-              } else {
-                // For subsequent chunks, update the existing message
-                setMessages(prev => {
-                  const newMessages = [...prev];
-                  newMessages[newMessages.length - 1].content = fullResponse;
-                  return newMessages;
-                });
-              }
+        Always introduce yourself as Albert, Jonathan's professional butler. Be helpful, informative, and guide users to the most relevant information based on their interests. Maintain a professional butler demeanor while avoiding overly deferential language.`;
+      
+      // Format the conversation for Claude
+      const formattedMessages = [
+        { role: "system", content: systemPrompt },
+        ...messages.map(m => ({ role: m.role, content: m.content })),
+        { role: "user", content: userMessage }
+      ];
+      
+      try {
+        // First try with streaming for better UX
+        const response = await window.puter.ai.chat(
+          formattedMessages,
+          { model: 'claude-3-5-sonnet', stream: true }
+        );
+        
+        let fullResponse = "";
+        let hasStartedResponse = false;
+        
+        for await (const part of response) {
+          if (part?.text) {
+            fullResponse += part.text;
+            
+            // For the first chunk, add a new message
+            if (!hasStartedResponse) {
+              setMessages(prev => [...prev, { role: "assistant", content: fullResponse }]);
+              hasStartedResponse = true;
+            } else {
+              // For subsequent chunks, update the existing message
+              setMessages(prev => {
+                const newMessages = [...prev];
+                newMessages[newMessages.length - 1].content = fullResponse;
+                return newMessages;
+              });
             }
           }
-        } catch (streamError) {
-          console.warn("Streaming failed, falling back to non-streaming mode", streamError);
-          
-          // Fallback to non-streaming if streaming fails
-          const response = await window.puter.ai.chat(
-            formattedMessages,
-            { model: 'claude-3-5-sonnet' }
-          );
-          
-          const aiResponse = response.message.content[0].text;
-          setMessages(prev => [...prev, { role: "assistant", content: aiResponse }]);
         }
-      } else {
-        // Fallback to the original server-side implementation
-        const response = await apiRequest<{ message: string }>("POST", "/api/chat", {
-          message: userMessage,
-          sessionId,
-        });
-
-        setMessages((prev) => [...prev, { role: "assistant", content: response.message }]);
+      } catch (streamError) {
+        console.warn("Streaming failed, falling back to non-streaming mode", streamError);
+        
+        // Fallback to non-streaming if streaming fails
+        const response = await window.puter.ai.chat(
+          formattedMessages,
+          { model: 'claude-3-5-sonnet' }
+        );
+        
+        const aiResponse = response.message.content[0].text;
+        setMessages(prev => [...prev, { role: "assistant", content: aiResponse }]);
       }
     } catch (error) {
       console.error("Chat error:", error);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Failed to get response. Please try again.",
+        description: "Puter.js AI service is not available. Please try again later.",
       });
     } finally {
       setIsLoading(false);
     }
   }
 
+  const toggleChatSize = () => {
+    setChatSize(prev => prev === 'normal' ? 'large' : 'normal');
+  };
+
+  const startResize = (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!chatContainerRef.current) return;
+    
+    setIsResizing(true);
+    initialResizePosition.current = { x: e.clientX, y: e.clientY };
+    
+    const rect = chatContainerRef.current.getBoundingClientRect();
+    initialSize.current = { width: rect.width, height: rect.height };
+    
+    // Add event listeners for resize
+    document.addEventListener('mousemove', handleResize);
+    document.addEventListener('mouseup', stopResize);
+  };
+
+  const handleResize = (e: MouseEvent) => {
+    if (!isResizing) return;
+    
+    const deltaX = e.clientX - initialResizePosition.current.x;
+    const deltaY = e.clientY - initialResizePosition.current.y;
+    
+    // Calculate new width and height
+    const newWidth = Math.max(300, initialSize.current.width + deltaX);
+    const newHeight = Math.max(300, initialSize.current.height + deltaY);
+    
+    setCustomSize({ width: newWidth, height: newHeight });
+  };
+
+  const stopResize = () => {
+    setIsResizing(false);
+    document.removeEventListener('mousemove', handleResize);
+    document.removeEventListener('mouseup', stopResize);
+  };
+
+  // Clean up event listeners
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleResize);
+      document.removeEventListener('mouseup', stopResize);
+    };
+  }, [isResizing]);
+
+  // Calculate dynamic sizes based on the current chatSize
+  const getChatDimensions = () => {
+    if (chatSize === 'large') {
+      return {
+        width: 'w-[90vw] sm:w-[70vw] md:w-[60vw]',
+        height: 'h-[70vh]',
+        position: 'bottom-20 right-20 left-20 sm:left-auto'
+      };
+    }
+    return {
+      width: 'w-[400px] sm:w-[500px]',
+      height: 'h-[500px]',
+      position: 'bottom-36 right-6'
+    };
+  };
+
+  const { width, height, position } = getChatDimensions();
+
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>
-        <Button
-          className="fixed bottom-4 right-4 h-12 w-12 rounded-full shadow-lg"
-          size="icon"
-        >
-          <MessageCircle className="h-6 w-6" />
-        </Button>
-      </SheetTrigger>
-      <SheetContent className="w-[400px] sm:w-[540px]">
-        <SheetHeader>
-          <SheetTitle>AI Assistant {isPuterAvailable ? "(Claude 3.5 Sonnet)" : ""}</SheetTitle>
-        </SheetHeader>
-        <div className="flex h-[calc(100vh-8rem)] flex-col gap-4">
-          <ScrollArea className="flex-1 pr-4">
-            <AnimatePresence initial={false}>
-              {messages.map((message, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className={`mb-4 flex ${
-                    message.role === "user" ? "justify-end" : "justify-start"
-                  }`}
+    <>
+      <Button
+        className="fixed bottom-6 right-6 h-24 w-24 rounded-full shadow-xl bg-white hover:bg-gray-100 z-50 transition-transform duration-300 hover:scale-105 border-2 border-gray-200"
+        size="icon"
+        variant="outline"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="text-6xl" role="img" aria-label="Albert">🤵‍♂️</span>
+      </Button>
+      
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div 
+            ref={chatContainerRef}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className={`fixed ${position} ${customSize.width > 0 ? '' : width} bg-background rounded-xl shadow-2xl border border-gray-200 dark:border-gray-800 z-40 overflow-hidden`}
+            style={{ 
+              maxHeight: chatSize === 'large' ? '80vh' : 'calc(100vh - 200px)',
+              width: customSize.width > 0 ? `${customSize.width}px` : undefined,
+              height: customSize.height > 0 ? `${customSize.height}px` : undefined
+            }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="p-4 border-b bg-gray-50 dark:bg-gray-900 flex justify-between items-center">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl" role="img" aria-label="Albert">🤵‍♂️</span>
+                <h3 className="font-semibold text-lg">Albert</h3>
+              </div>
+              <div className="flex items-center gap-1">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={toggleChatSize} 
+                  className="h-8 w-8 p-0 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full"
+                  title={chatSize === 'normal' ? "Maximize chat" : "Minimize chat"}
                 >
-                  <div
-                    className={`rounded-lg px-4 py-2 ${
-                      message.role === "user"
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted"
-                    }`}
-                  >
-                    {message.content}
-                  </div>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-          </ScrollArea>
-          <form onSubmit={sendMessage} className="flex gap-2">
-            <Input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask me anything..."
-              disabled={isLoading}
-            />
-            <Button type="submit" size="icon" disabled={isLoading}>
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                  {chatSize === 'normal' ? (
+                    <Maximize2 className="h-4 w-4" />
+                  ) : (
+                    <Minimize2 className="h-4 w-4" />
+                  )}
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setIsOpen(false)} 
+                  className="h-8 w-8 p-0 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full"
+                >
+                  <span className="sr-only">Close</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </Button>
+              </div>
+            </div>
+            
+            <div className={`flex flex-col ${customSize.height > 0 ? '' : height} bg-gray-50/50 dark:bg-gray-900/50`} style={{ height: customSize.height > 0 ? `${customSize.height - 57}px` : undefined }}>
+              {messages.length === 0 ? (
+                <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
+                  <span className="text-4xl mb-4" role="img" aria-label="Welcome">👋</span>
+                  <h4 className="text-lg font-medium mb-2">Welcome to the conversation!</h4>
+                  <p className="text-gray-500 dark:text-gray-400 max-w-xs">
+                    I'm Albert, Jonathan's AI butler. How may I assist you today?
+                  </p>
+                </div>
               ) : (
-                <Send className="h-4 w-4" />
+                <ScrollArea className="flex-1 p-4">
+                  <AnimatePresence initial={false}>
+                    {messages.map((message, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        className={`mb-4 flex ${
+                          message.role === "user" ? "justify-end" : "justify-start"
+                        }`}
+                      >
+                        {message.role === "assistant" && (
+                          <div className="flex-shrink-0 mr-2 mt-1">
+                            <span className="text-xl" role="img" aria-label="Albert">🤵‍♂️</span>
+                          </div>
+                        )}
+                        
+                        <div
+                          className={`rounded-2xl px-5 py-3 max-w-[85%] text-base shadow-sm ${
+                            message.role === "user"
+                              ? "bg-blue-600 text-white rounded-tr-none"
+                              : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-tl-none"
+                          }`}
+                        >
+                          <div className={`message-content ${message.role === "assistant" ? "prose prose-sm dark:prose-invert max-w-none" : ""}`}>
+                            {message.role === "assistant" 
+                              ? formatMessageContent(message.content)
+                              : message.content
+                            }
+                          </div>
+                        </div>
+                        
+                        {message.role === "user" && (
+                          <div className="flex-shrink-0 ml-2 mt-1">
+                            <span className="text-xl bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center">
+                              {/* User initial or icon */}
+                              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </span>
+                          </div>
+                        )}
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </ScrollArea>
               )}
-            </Button>
-          </form>
-        </div>
-      </SheetContent>
-    </Sheet>
+              
+              <form onSubmit={sendMessage} className="p-4 border-t bg-white dark:bg-gray-900 flex gap-3">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Ask Albert anything..."
+                  disabled={isLoading}
+                  className="flex-1 h-12 text-base rounded-full border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <Button 
+                  type="submit" 
+                  size="icon" 
+                  disabled={isLoading} 
+                  className="h-12 w-12 rounded-full bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  {isLoading ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Send className="h-5 w-5" />
+                  )}
+                </Button>
+              </form>
+            </div>
+            
+            {/* Resize handle */}
+            <div 
+              className="absolute bottom-0 right-0 w-6 h-6 cursor-nwse-resize opacity-50 hover:opacity-100 transition-opacity"
+              onMouseDown={startResize}
+              title="Resize chat"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M22 22L16 16M22 16L16 22" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+              </svg>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 }

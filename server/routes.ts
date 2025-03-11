@@ -3,10 +3,6 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import nodemailer from "nodemailer";
 import { z } from "zod";
-import bcrypt from "bcryptjs";
-import { setupAuth } from "./auth";
-import { insertProjectSchema } from "@shared/schema";
-import { getChatResponse } from "./lib/openai";
 
 const contactSchema = z.object({
   name: z.string().min(1),
@@ -14,28 +10,31 @@ const contactSchema = z.object({
   message: z.string().min(10),
 });
 
-const loginSchema = z.object({
-  username: z.string().min(1),
-  password: z.string().min(6),
-});
-
-const chatMessageSchema = z.object({
-  message: z.string().min(1),
-  sessionId: z.string().min(1),
-});
-
 export async function registerRoutes(app: Express): Promise<Server> {
-  const { isAuthenticated } = setupAuth(app);
-
   // Email setup
+  if (!process.env.SMTP_PASS || !process.env.SENDER_EMAIL || !process.env.RECIPIENT_EMAIL) {
+    throw new Error('Missing required email configuration environment variables');
+  }
+
+  const SENDER_EMAIL = process.env.SENDER_EMAIL;
+  const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL;
+  const SMTP_PASS = process.env.SMTP_PASS;
+
   const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: false,
+    service: 'SendGrid',
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
+      user: 'apikey',
+      pass: SMTP_PASS
+    }
+  });
+
+  // Verify the connection configuration
+  transporter.verify(function (error, success) {
+    if (error) {
+      console.log("SMTP connection error:", error);
+    } else {
+      console.log("SMTP server is ready to take our messages");
+    }
   });
 
   // Contact form endpoint
@@ -44,8 +43,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { name, email, message } = contactSchema.parse(req.body);
 
       await transporter.sendMail({
-        from: process.env.SMTP_USER,
-        to: process.env.SMTP_USER,
+        from: {
+          name: "Jonathan Mahrt",
+          address: SENDER_EMAIL
+        },
+        to: RECIPIENT_EMAIL,
         replyTo: email,
         subject: `Portfolio Contact Form: Message from ${name}`,
         text: `Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
@@ -65,101 +67,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Admin Authentication Routes
-  app.post("/api/admin/login", async (req, res) => {
-    try {
-      const { username, password } = loginSchema.parse(req.body);
-      const admin = await storage.getAdminByUsername(username);
-
-      if (!admin || !(await bcrypt.compare(password, admin.password))) {
-        return res.status(401).json({ message: "Invalid credentials" });
-      }
-
-      req.login(admin, (err) => {
-        if (err) {
-          throw err;
-        }
-        res.json({ message: "Logged in successfully" });
-      });
-    } catch (error) {
-      res.status(400).json({ message: "Login failed" });
-    }
-  });
-
-  app.post("/api/admin/logout", (req, res) => {
-    req.logout(() => {
-      res.json({ message: "Logged out successfully" });
-    });
-  });
-
-  // Protected Project Management Routes
-  app.get("/api/admin/projects", isAuthenticated, async (req, res) => {
-    const projects = await storage.getProjects();
-    res.json(projects);
-  });
-
   // Public Projects API endpoint
   app.get("/api/projects", async (req, res) => {
     const projects = await storage.getProjects();
     res.json(projects);
   });
 
-  app.post("/api/admin/projects", isAuthenticated, async (req, res) => {
-    try {
-      const projectData = insertProjectSchema.parse(req.body);
-      const project = await storage.createProject(projectData);
-      res.json(project);
-    } catch (error) {
-      res.status(400).json({ message: "Invalid project data" });
-    }
-  });
-
-  app.patch("/api/admin/projects/:id", isAuthenticated, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      const updates = insertProjectSchema.partial().parse(req.body);
-      const project = await storage.updateProject(id, updates);
-      res.json(project);
-    } catch (error) {
-      res.status(400).json({ message: "Failed to update project" });
-    }
-  });
-
-  app.delete("/api/admin/projects/:id", isAuthenticated, async (req, res) => {
-    try {
-      const id = parseInt(req.params.id);
-      await storage.deleteProject(id);
-      res.json({ message: "Project deleted successfully" });
-    } catch (error) {
-      res.status(400).json({ message: "Failed to delete project" });
-    }
-  });
-
-  // Chat endpoint
-  app.post("/api/chat", async (req, res) => {
-    try {
-      const { message, sessionId } = chatMessageSchema.parse(req.body);
-
-      const chatHistory = [
-        { role: "user", content: message }
-      ];
-
-      const response = await getChatResponse(chatHistory);
-
-      if (!response || !response.content) {
-        throw new Error("Invalid response from AI service");
-      }
-
-      res.json({ message: response.content });
-    } catch (error) {
-      console.error("Chat error:", error);
-      res.status(500).json({ 
-        message: "Failed to process chat message",
-        error: error instanceof Error ? error.message : "Unknown error"
-      });
-    }
-  });
-
-  const httpServer = createServer(app);
-  return httpServer;
+  // Create HTTP server
+  const server = createServer(app);
+  return server;
 }
