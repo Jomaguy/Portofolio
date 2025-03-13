@@ -21,22 +21,9 @@ export const projects = pgTable("projects", {
   buttons: jsonb("buttons").array().$type<ProjectButton[]>()
 });
 
-export const admins = pgTable("admins", {
-  id: serial("id").primaryKey(),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull(),
-});
-
 export const insertProjectSchema = createInsertSchema(projects);
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
-
-export const insertAdminSchema = createInsertSchema(admins).pick({
-  username: true,
-  password: true,
-});
-export type InsertAdmin = z.infer<typeof insertAdminSchema>;
-export type Admin = typeof admins.$inferSelect;
 
 export type ProjectCategory = "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Cybersecurity" | "Other";
 
