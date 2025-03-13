@@ -16,18 +16,9 @@ import { nanoid } from "nanoid";
 import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 import { type Project } from "@shared/schema";
+import { sendMessageToHuggingFace, isHuggingFaceAvailable, type Message as HuggingFaceMessage } from "@/services/huggingface";
 
-// Define the Puter type for TypeScript
-declare global {
-  interface Window {
-    puter?: {
-      ai: {
-        chat: (prompt: any, options: any) => Promise<any>;
-      };
-    };
-  }
-}
-
+// Define the Message interface
 interface Message {
   role: "user" | "assistant";
   content: string;
@@ -55,7 +46,7 @@ const formatMessageContent = (content: string) => {
         const textBefore = content.substring(lastIndex, match.index);
         if (textBefore.trim()) {
           segments.push(
-            <div key={`text-${segments.length}`} className="mb-3">
+            <div key={`text-${segments.length}`} className="mb-3 text-xl" style={{ fontSize: '1.25rem' }}>
               {formatMessageContent(textBefore)}
             </div>
           );
@@ -67,9 +58,9 @@ const formatMessageContent = (content: string) => {
       const code = match[2];
       
       segments.push(
-        <div key={`code-${segments.length}`} className="mb-3 rounded bg-gray-100 dark:bg-gray-900 p-3 font-mono text-sm overflow-x-auto">
+        <div key={`code-${segments.length}`} className="mb-3 rounded bg-gray-100 dark:bg-gray-900 p-3 font-mono text-lg overflow-x-auto" style={{ fontSize: '1.2rem' }}>
           {code.split('\n').map((line, i) => (
-            <div key={i} className="whitespace-pre">
+            <div key={i} className="whitespace-pre" style={{ fontSize: '1.2rem' }}>
               {line}
             </div>
           ))}
@@ -84,7 +75,7 @@ const formatMessageContent = (content: string) => {
       const textAfter = content.substring(lastIndex);
       if (textAfter.trim()) {
         segments.push(
-          <div key={`text-${segments.length}`} className="mb-3">
+          <div key={`text-${segments.length}`} className="mb-3 text-xl" style={{ fontSize: '1.25rem' }}>
             {formatMessageContent(textAfter)}
           </div>
         );
@@ -134,12 +125,12 @@ const formatMessageContent = (content: string) => {
           const listType = hasNumberedList ? "ol" : "ul";
           result.push(
             listType === "ol" ? (
-              <ol key={`list-${index}`} className="list-decimal pl-5 mb-3 space-y-1">
-                {listItems.map((item, i) => <li key={i}>{item}</li>)}
+              <ol key={`list-${index}`} className="list-decimal pl-5 mb-3 space-y-1 text-xl" style={{ fontSize: '1.25rem' }}>
+                {listItems.map((item, i) => <li key={i} style={{ fontSize: '1.25rem' }}>{item}</li>)}
               </ol>
             ) : (
-              <ul key={`list-${index}`} className="list-disc pl-5 mb-3 space-y-1">
-                {listItems.map((item, i) => <li key={i}>{item}</li>)}
+              <ul key={`list-${index}`} className="list-disc pl-5 mb-3 space-y-1 text-xl" style={{ fontSize: '1.25rem' }}>
+                {listItems.map((item, i) => <li key={i} style={{ fontSize: '1.25rem' }}>{item}</li>)}
               </ul>
             )
           );
@@ -165,12 +156,12 @@ const formatMessageContent = (content: string) => {
       const listType = hasNumberedList ? "ol" : "ul";
       result.push(
         listType === "ol" ? (
-          <ol key="list-end" className="list-decimal pl-5 mb-3 space-y-1">
-            {listItems.map((item, i) => <li key={i}>{item}</li>)}
+          <ol key="list-end" className="list-decimal pl-5 mb-3 space-y-1 text-xl" style={{ fontSize: '1.25rem' }}>
+            {listItems.map((item, i) => <li key={i} style={{ fontSize: '1.25rem' }}>{item}</li>)}
           </ol>
         ) : (
-          <ul key="list-end" className="list-disc pl-5 mb-3 space-y-1">
-            {listItems.map((item, i) => <li key={i}>{item}</li>)}
+          <ul key="list-end" className="list-disc pl-5 mb-3 space-y-1 text-xl" style={{ fontSize: '1.25rem' }}>
+            {listItems.map((item, i) => <li key={i} style={{ fontSize: '1.25rem' }}>{item}</li>)}
           </ul>
         )
       );
@@ -192,14 +183,14 @@ const formatMessageContent = (content: string) => {
     const lines = content.split(/\n/);
     if (lines.length > 1) {
       return lines.map((line, i) => (
-        <p key={i} className={i > 0 ? "mt-2" : ""}>{line}</p>
+        <p key={i} className={i > 0 ? "mt-2 text-xl" : "text-xl"} style={{ fontSize: '1.25rem' }}>{line}</p>
       ));
     }
-    return <p>{content}</p>;
+    return <p className="text-xl" style={{ fontSize: '1.25rem' }}>{content}</p>;
   }
   
   return paragraphs.map((paragraph, i) => (
-    <p key={i} className={i > 0 ? "mt-3" : ""}>{paragraph}</p>
+    <p key={i} className={i > 0 ? "mt-3 text-xl" : "text-xl"} style={{ fontSize: '1.25rem' }}>{paragraph}</p>
   ));
 };
 
@@ -208,7 +199,7 @@ export function ChatInterface() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isPuterAvailable, setIsPuterAvailable] = useState(false);
+  const [isHuggingFaceReady, setIsHuggingFaceReady] = useState(false);
   const [chatSize, setChatSize] = useState<'normal' | 'large'>('normal');
   const [isResizing, setIsResizing] = useState(false);
   const [customSize, setCustomSize] = useState({ width: 0, height: 0 });
@@ -230,20 +221,9 @@ export function ChatInterface() {
     queryFn: getQueryFn({ on401: "throw" }),
   });
 
-  // Check if Puter.js is available
+  // Check if Hugging Face is available
   useEffect(() => {
-    const checkPuter = () => {
-      if (window.puter) {
-        setIsPuterAvailable(true);
-      }
-    };
-
-    // Check immediately
-    checkPuter();
-
-    // Also check after a short delay to allow for script loading
-    const timer = setTimeout(checkPuter, 1000);
-    return () => clearTimeout(timer);
+    setIsHuggingFaceReady(isHuggingFaceAvailable());
   }, []);
 
   async function sendMessage(e: React.FormEvent) {
@@ -256,10 +236,6 @@ export function ChatInterface() {
     setIsLoading(true);
 
     try {
-      if (!isPuterAvailable || !window.puter) {
-        throw new Error("Puter.js is not available");
-      }
-      
       // Create a project context string for the AI
       const projectsContext = projects.map(p => 
         `Project: ${p.title}
@@ -272,88 +248,134 @@ export function ChatInterface() {
       // Create a resume context string for the AI
       const resumeContext = resume ? JSON.stringify(resume, null, 2) : "";
       
+      // Define the system prompt
       const systemPrompt = `You are Albert, a professional AI butler for Jonathan Mahrt Guyou's portfolio website. You should maintain a polite, professional butler persona in your interactions.
 
-        Your role is to:
-        1. Help visitors navigate Jonathan's portfolio website and find information about him
-        2. Answer questions about Jonathan's projects, skills, and professional experience
-        3. Provide detailed technical explanations when asked about specific projects
-        4. Maintain a professional, courteous, and helpful butler tone
-        5. Assist visitors in contacting Jonathan or viewing his resume
-        
-        The website has a single-page design with the following sections:
-        - Home: The main page featuring Jonathan's profile and all his projects
-        - Resume: Available through the "Resume" button in the navigation bar (opens a modal)
-        - Contact: Available through the "Contact Me" button in the navigation bar (opens a contact form)
-        
-        Projects are categorized as:
-        - Web Apps
-        - Mobile Apps
-        - Chrome Extensions
-        - Cybersecurity
-        - Other
-        
-        Here are the specific projects in Jonathan's portfolio:
-        ${projectsContext}
-
-        Here is Jonathan's resume information:
-        ${resumeContext}
-
-        Always introduce yourself as Albert, Jonathan's professional butler. Be helpful, informative, and guide users to the most relevant information based on their interests. Maintain a professional butler demeanor while avoiding overly deferential language.`;
+      Your role is to:
+      1. Help visitors navigate Jonathan's portfolio website and find information about him
+      2. Answer questions about Jonathan's projects, skills, and professional experience
+      3. Provide detailed technical explanations when asked about specific projects
+      4. Maintain a professional, courteous, and helpful butler tone
+      5. Assist visitors in contacting Jonathan or viewing his resume
       
-      // Format the conversation for Claude
-      const formattedMessages = [
+      IMPORTANT CONVERSATION GUIDELINES:
+      - Maintain context throughout the conversation
+      - Only introduce yourself in your first response to a user
+      - For follow-up questions, respond directly without reintroducing yourself
+      - Remember previous questions and refer back to them when relevant
+      - Be concise in your responses while remaining helpful and informative
+      
+      The website has a single-page design with the following sections:
+      - Home: The main page featuring Jonathan's profile and all his projects
+      - Resume: Available through the "Resume" button in the navigation bar (opens a modal)
+      - Contact: Available through the "Contact Me" button in the navigation bar (opens a contact form)
+      
+      Projects are categorized as:
+      - Web Apps
+      - Mobile Apps
+      - Chrome Extensions
+      - Cybersecurity
+      - Other
+      
+      Here are the specific projects in Jonathan's portfolio:
+      ${projectsContext}
+
+      Here is Jonathan's resume information:
+      ${resumeContext}
+
+      Always introduce yourself as Albert, Jonathan's professional butler in your FIRST message only. Be helpful, informative, and guide users to the most relevant information based on their interests. Maintain a professional butler demeanor while avoiding overly deferential language.`;
+      
+      // Format messages for the AI service
+      const formattedMessages: HuggingFaceMessage[] = [
         { role: "system", content: systemPrompt },
-        ...messages.map(m => ({ role: m.role, content: m.content })),
+        ...messages.map(m => ({ role: m.role, content: m.content }) as HuggingFaceMessage),
         { role: "user", content: userMessage }
       ];
       
+      // Add initial "thinking" message
+      setMessages(prev => [...prev, { role: "assistant", content: "I'm thinking..." }]);
+      
+      // Try to use the API endpoint first
       try {
-        // First try with streaming for better UX
-        const response = await window.puter.ai.chat(
-          formattedMessages,
-          { model: 'claude-3-5-sonnet', stream: true }
-        );
+        const apiResponse = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            messages: formattedMessages
+          }),
+        });
         
-        let fullResponse = "";
-        let hasStartedResponse = false;
-        
-        for await (const part of response) {
-          if (part?.text) {
-            fullResponse += part.text;
-            
-            // For the first chunk, add a new message
-            if (!hasStartedResponse) {
-              setMessages(prev => [...prev, { role: "assistant", content: fullResponse }]);
-              hasStartedResponse = true;
-            } else {
-              // For subsequent chunks, update the existing message
-              setMessages(prev => {
-                const newMessages = [...prev];
-                newMessages[newMessages.length - 1].content = fullResponse;
-                return newMessages;
-              });
-            }
-          }
+        if (!apiResponse.ok) {
+          throw new Error(`API responded with status: ${apiResponse.status}`);
         }
-      } catch (streamError) {
-        console.warn("Streaming failed, falling back to non-streaming mode", streamError);
         
-        // Fallback to non-streaming if streaming fails
-        const response = await window.puter.ai.chat(
-          formattedMessages,
-          { model: 'claude-3-5-sonnet' }
-        );
+        const data = await apiResponse.json();
         
-        const aiResponse = response.message.content[0].text;
-        setMessages(prev => [...prev, { role: "assistant", content: aiResponse }]);
+        // Update the message with the response
+        setMessages(prev => {
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content = data.response;
+          return newMessages;
+        });
+        
+        return;
+      } catch (apiError) {
+        console.error("Error using API endpoint:", apiError);
+        // Fall back to client-side implementation if API fails
+      }
+      
+      // Fallback to client-side implementation
+      if (isHuggingFaceReady) {
+        // Send message to Hugging Face with streaming
+        const hfResponse = await sendMessageToHuggingFace(formattedMessages, (partialResponse) => {
+          setMessages(prev => {
+            const newMessages = [...prev];
+            newMessages[newMessages.length - 1].content = partialResponse;
+            return newMessages;
+          });
+        });
+        
+        // If sendMessageToHuggingFace returns without using the callback (error case)
+        // Make sure we update the message with the error response
+        setMessages(prev => {
+          const newMessages = [...prev];
+          if (newMessages[newMessages.length - 1].content === "I'm thinking...") {
+            newMessages[newMessages.length - 1].content = hfResponse;
+          }
+          return newMessages;
+        });
+      } else {
+        throw new Error("Hugging Face API is not available");
       }
     } catch (error) {
-      console.error("Chat error:", error);
+      console.error("Error in chat:", error);
       toast({
+        title: "Chat Error",
+        description: "Unable to get a response from Albert at this time. Please try again later.",
         variant: "destructive",
-        title: "Error",
-        description: "Puter.js AI service is not available. Please try again later.",
+      });
+      
+      // Add a fallback message
+      setMessages(prev => {
+        // Check if we already added a thinking message
+        const lastMessage = prev[prev.length - 1];
+        if (lastMessage && lastMessage.role === "assistant" && lastMessage.content === "I'm thinking...") {
+          // Update the existing message
+          const newMessages = [...prev];
+          newMessages[newMessages.length - 1].content = "I apologize, but I'm currently unable to assist you. Please try again later.";
+          return newMessages;
+        } else {
+          // Add a new message
+          return [
+            ...prev, 
+            { 
+              role: "assistant", 
+              content: "I apologize, but I'm currently unable to assist you. Please try again later." 
+            }
+          ];
+        }
       });
     } finally {
       setIsLoading(false);
@@ -484,9 +506,9 @@ export function ChatInterface() {
             <div className={`flex flex-col ${customSize.height > 0 ? '' : height} bg-gray-50/50 dark:bg-gray-900/50`} style={{ height: customSize.height > 0 ? `${customSize.height - 57}px` : undefined }}>
               {messages.length === 0 ? (
                 <div className="flex-1 flex flex-col items-center justify-center p-6 text-center">
-                  <span className="text-4xl mb-4" role="img" aria-label="Welcome">👋</span>
-                  <h4 className="text-lg font-medium mb-2">Welcome to the conversation!</h4>
-                  <p className="text-gray-500 dark:text-gray-400 max-w-xs">
+                  <span className="text-5xl mb-4" role="img" aria-label="Welcome">👋</span>
+                  <h4 className="text-2xl font-medium mb-2" style={{ fontSize: '1.5rem' }}>Welcome to the conversation!</h4>
+                  <p className="text-gray-500 dark:text-gray-400 max-w-xs text-xl" style={{ fontSize: '1.25rem' }}>
                     I'm Albert, Jonathan's AI butler. How may I assist you today?
                   </p>
                 </div>
@@ -510,13 +532,14 @@ export function ChatInterface() {
                         )}
                         
                         <div
-                          className={`rounded-2xl px-5 py-3 max-w-[85%] text-base shadow-sm ${
+                          className={`rounded-2xl px-5 py-3 max-w-[85%] shadow-sm ${
                             message.role === "user"
                               ? "bg-blue-600 text-white rounded-tr-none"
                               : "bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-tl-none"
                           }`}
+                          style={{ fontSize: '1.25rem' }}
                         >
-                          <div className={`message-content ${message.role === "assistant" ? "prose prose-sm dark:prose-invert max-w-none" : ""}`}>
+                          <div className={`message-content text-xl ${message.role === "assistant" ? "prose prose-xl dark:prose-invert max-w-none" : ""}`}>
                             {message.role === "assistant" 
                               ? formatMessageContent(message.content)
                               : message.content
@@ -544,7 +567,8 @@ export function ChatInterface() {
                   onChange={(e) => setInput(e.target.value)}
                   placeholder="Ask Albert anything..."
                   disabled={isLoading}
-                  className="flex-1 h-12 text-base rounded-full border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="flex-1 h-12 text-xl rounded-full border-gray-300 dark:border-gray-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  style={{ fontSize: '1.25rem' }}
                 />
                 <Button 
                   type="submit" 

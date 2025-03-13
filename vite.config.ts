@@ -36,5 +36,11 @@ export default defineConfig({
       input: path.resolve(__dirname, "client/index.html")
     }
   },
-  publicDir: path.resolve(__dirname, "client/public")
+  publicDir: path.resolve(__dirname, "client/public"),
+  // Define environment variables that should be exposed to the client
+  define: {
+    // Expose VITE_ prefixed env variables to the client
+    'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(process.env.VITE_GEMINI_API_KEY),
+    'import.meta.env.VITE_HUGGINGFACE_API_KEY': JSON.stringify(process.env.VITE_HUGGINGFACE_API_KEY)
+  }
 });
