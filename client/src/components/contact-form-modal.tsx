@@ -1,6 +1,4 @@
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,42 +20,12 @@ import {
 import { useState } from "react";
 import { CheckCircle2 } from "lucide-react";
 
-// Define validation schema using zod
-// This will be processed during build time by zodResolver
-const contactFormSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Invalid email address"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
-});
-
-// This type inference still works at build time
-type ContactFormData = z.infer<typeof contactFormSchema>;
-
-// Create manual validation function (as fallback)
-function validateContactForm(data: any): { valid: boolean, errors: Record<string, string> } {
-  const errors: Record<string, string> = {};
-  
-  // Name validation
-  if (!data.name || data.name.trim().length === 0) {
-    errors.name = "Name is required";
-  }
-  
-  // Email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if (!data.email || !emailRegex.test(data.email)) {
-    errors.email = "Invalid email address";
-  }
-  
-  // Message validation
-  if (!data.message || data.message.trim().length < 10) {
-    errors.message = "Message must be at least 10 characters";
-  }
-  
-  return {
-    valid: Object.keys(errors).length === 0,
-    errors
-  };
-}
+// Define our form data type without zod
+type ContactFormData = {
+  name: string;
+  email: string;
+  message: string;
+};
 
 interface ContactFormModalProps {
   open: boolean;
@@ -69,21 +37,25 @@ export function ContactFormModal({ open, onOpenChange }: ContactFormModalProps) 
   const [isSuccess, setIsSuccess] = useState(false);
   
   const form = useForm<ContactFormData>({
-    resolver: zodResolver(contactFormSchema),
     defaultValues: {
       name: "",
       email: "",
       message: "",
-    },
+    }
   });
 
   async function onSubmit(data: ContactFormData) {
     setIsSubmitting(true);
     try {
-      // Use our fallback validation as an extra safety measure
-      const validation = validateContactForm(data);
-      if (!validation.valid) {
-        throw new Error("Validation failed: " + Object.values(validation.errors).join(", "));
+      // Basic validation just in case
+      if (!data.name || data.name.trim() === '') {
+        throw new Error("Name is required");
+      }
+      if (!data.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
+        throw new Error("Valid email is required");
+      }
+      if (!data.message || data.message.trim().length < 10) {
+        throw new Error("Message must be at least 10 characters");
       }
       
       const response = await apiRequest("POST", "/api/contact", data);
