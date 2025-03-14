@@ -1,4 +1,3 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
 import { sendMessageToHuggingFace, type Message } from '@/services/huggingface';
 
 // Handle Hugging Face API requests
@@ -11,9 +10,22 @@ const handleHuggingFaceRequest = async (messages: Message[]): Promise<string> =>
   }
 };
 
+interface ApiRequest {
+  method: string;
+  body: {
+    messages?: Message[];
+    [key: string]: any;
+  };
+}
+
+interface ApiResponse {
+  status: (code: number) => ApiResponse;
+  json: (data: any) => void;
+}
+
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+  req: ApiRequest,
+  res: ApiResponse
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
