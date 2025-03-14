@@ -13,7 +13,7 @@
       ]
     },
     {
-      "source": "/*.json",
+      "source": "/data/(.*)",
       "headers": [
         { "key": "Content-Type", "value": "application/json" },
         { "key": "Cache-Control", "value": "public, max-age=3600" }
@@ -21,6 +21,6 @@
     }
   ],
   "rewrites": [
-    { "source": "/((?!api/.*)(?!\\.json$).*)", "destination": "/index.html" }
+    { "source": "/((?!api/.*|data/.*).*)", "destination": "/index.html" }
   ]
 } 

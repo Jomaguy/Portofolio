@@ -38,9 +38,7 @@ export function NavBar() {
         {/* Logo */}
         <div className="flex-none mr-12">
           <Link href="/">
-            <a className="flex items-center">
-              <span className="text-3xl font-bold">Portfolio</span>
-            </a>
+            <span className="text-3xl font-bold flex items-center">Portfolio</span>
           </Link>
         </div>
         
@@ -66,13 +64,13 @@ export function NavBar() {
           {rightRoutes.map((route) => (
             'href' in route && route.href ? (
               <Link key={route.href} href={route.href}>
-                <a className={`mr-4 flex items-center justify-center h-10 px-4 rounded-full border-2 transition-colors ${
+                <span className={`mr-4 flex items-center justify-center h-10 px-4 rounded-full border-2 transition-colors ${
                   location === route.href 
                     ? 'text-foreground font-semibold border-primary' 
                     : 'text-foreground/60 border-muted hover:bg-muted/50'
                 }`}>
                   {route.label}
-                </a>
+                </span>
               </Link>
             ) : (
               <button
@@ -97,18 +95,18 @@ export function NavBar() {
             <SheetContent side="left">
               <nav className="flex flex-col space-y-8 mt-12">
                 <Link href="/">
-                  <a
+                  <span
                     className={`text-2xl ${location === "/" ? 'text-foreground font-semibold' : 'text-foreground/60'}`}
                     onClick={() => setOpen(false)}
                   >
                     Home
-                  </a>
+                  </span>
                 </Link>
                 
                 {rightRoutes.map((route) => (
                   'href' in route && route.href ? (
                     <Link key={route.href} href={route.href}>
-                      <a
+                      <span
                         className={`text-2xl px-4 py-2 rounded-full border-2 inline-block ${
                           location === route.href 
                             ? 'text-foreground font-semibold border-primary' 
@@ -117,7 +115,7 @@ export function NavBar() {
                         onClick={() => setOpen(false)}
                       >
                         {route.label}
-                      </a>
+                      </span>
                     </Link>
                   ) : (
                     <button

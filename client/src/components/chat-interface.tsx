@@ -18,6 +18,10 @@ import { getQueryFn } from "@/lib/queryClient";
 import { type Project } from "@shared/schema";
 import { sendMessageToHuggingFace, isHuggingFaceAvailable, type Message as HuggingFaceMessage } from "@/services/huggingface";
 
+// Remove direct imports and use fetch instead
+// import projectsJson from '/projects.json';
+// import resumeJson from '/resume.json';
+
 // Define the Message interface
 interface Message {
   role: "user" | "assistant";
@@ -209,17 +213,28 @@ export function ChatInterface() {
   const initialResizePosition = useRef({ x: 0, y: 0 });
   const initialSize = useRef({ width: 0, height: 0 });
 
-  // Fetch projects to include in the context for the AI
-  const { data: projects = [] } = useQuery<Project[]>({
-    queryKey: ["/projects.json"],
-    queryFn: getQueryFn<Project[]>({ on401: "throw" }),
-  });
+  // Add state for projects and resume data
+  const [projectsData, setProjectsData] = useState<Project[]>([]);
+  const [resumeData, setResumeData] = useState<any>(null);
+  
+  // Fetch projects and resume data when component mounts
+  useEffect(() => {
+    // Fetch projects data
+    fetch('/projects.json')
+      .then(response => response.json())
+      .then(data => setProjectsData(data))
+      .catch(error => console.error('Error fetching projects data:', error));
+    
+    // Fetch resume data
+    fetch('/resume.json')
+      .then(response => response.json())
+      .then(data => setResumeData(data))
+      .catch(error => console.error('Error fetching resume data:', error));
+  }, []);
 
-  // Fetch resume data to include in the context for the AI
-  const { data: resume } = useQuery({
-    queryKey: ["/resume.json"],
-    queryFn: getQueryFn({ on401: "throw" }),
-  });
+  // Replace the direct assignments with the state variables
+  const projects = projectsData;
+  const resume = resumeData;
 
   // Check if Hugging Face is available
   useEffect(() => {
