@@ -26,7 +26,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "client", "src"),
       "@shared": path.resolve(__dirname, "shared"),
-    },
+      "zod": path.resolve(__dirname, "node_modules/zod"),
+      "@hookform/resolvers/zod": path.resolve(__dirname, "node_modules/@hookform/resolvers/zod"),
+      "@tanstack/react-query": path.resolve(__dirname, "node_modules/@tanstack/react-query")
+    }
   },
   root: path.resolve(__dirname, "client"),
   build: {
@@ -35,6 +38,9 @@ export default defineConfig({
     rollupOptions: {
       input: path.resolve(__dirname, "client/index.html")
     }
+  },
+  optimizeDeps: {
+    include: ['zod', '@hookform/resolvers/zod', '@tanstack/react-query']
   },
   publicDir: path.resolve(__dirname, "client/public"),
   // Define environment variables that should be exposed to the client
