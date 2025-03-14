@@ -113,7 +113,10 @@ export class FileStorage implements IStorage {
   private currentProjectId: number;
   private currentUserId: number;
 
-  constructor(dataDir: string = './data') {
+  constructor(dataDir: string = process.env.NODE_ENV === 'production' 
+    ? path.join(process.cwd(), 'data') 
+    : './data') {
+    console.log(`Storage using data directory: ${dataDir}`);
     this.dataDir = dataDir;
     this.projectsFile = path.join(dataDir, 'projects.json');
     this.usersFile = path.join(dataDir, 'users.json');
@@ -128,18 +131,43 @@ export class FileStorage implements IStorage {
   private async initialize() {
     try {
       // Create data directory if it doesn't exist
-      await fs.mkdir(this.dataDir, { recursive: true });
+      try {
+        await fs.mkdir(this.dataDir, { recursive: true });
+        console.log(`Created/verified data directory: ${this.dataDir}`);
+      } catch (error) {
+        console.error(`Error creating data directory: ${this.dataDir}`, error);
+      }
       
       // Initialize projects
       try {
+        console.log(`Attempting to read projects from: ${this.projectsFile}`);
         const projectsData = await fs.readFile(this.projectsFile, 'utf-8');
+        console.log(`Successfully read projects data, length: ${projectsData.length}`);
         this.projects = JSON.parse(projectsData);
         // Find the highest project ID to set the next ID
         this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
+        console.log(`Loaded ${this.projects.length} projects`);
       } catch (error) {
-        // If file doesn't exist or is invalid, initialize with sample data
-        this.projects = [...projectData];
-        await this.saveProjects();
+        console.error(`Error reading projects file: ${this.projectsFile}`, error);
+        
+        // Try reading from root directory as a fallback
+        try {
+          const rootProjectsPath = path.join(process.cwd(), 'projects.json');
+          console.log(`Attempting to read projects from root: ${rootProjectsPath}`);
+          const rootProjectsData = await fs.readFile(rootProjectsPath, 'utf-8');
+          console.log(`Successfully read projects from root, length: ${rootProjectsData.length}`);
+          this.projects = JSON.parse(rootProjectsData);
+          this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
+          console.log(`Loaded ${this.projects.length} projects from root file`);
+          // Save to the normal location for future use
+          await this.saveProjects();
+        } catch (rootError) {
+          console.error(`Error reading root projects file`, rootError);
+          // If file doesn't exist or is invalid, initialize with sample data
+          console.log('Initializing with sample project data');
+          this.projects = [...projectData];
+          await this.saveProjects();
+        }
       }
 
       // Initialize users
@@ -148,6 +176,7 @@ export class FileStorage implements IStorage {
         this.users = JSON.parse(usersData);
         this.currentUserId = Math.max(...this.users.map(u => u.id), 0) + 1;
       } catch (error) {
+        console.error(`Error reading users file: ${this.usersFile}`, error);
         this.users = [];
         await this.saveUsers();
       }

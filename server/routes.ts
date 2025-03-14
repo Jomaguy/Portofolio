@@ -89,8 +89,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Public Projects API endpoint
   app.get("/api/projects", async (req, res) => {
-    const projects = await storage.getProjects();
-    res.json(projects);
+    try {
+      console.log("Fetching projects from storage");
+      const projects = await storage.getProjects();
+      console.log(`Retrieved ${projects.length} projects`);
+      res.json(projects);
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+      res.status(500).json({ 
+        error: "Failed to retrieve projects",
+        details: error instanceof Error ? error.message : String(error)
+      });
+    }
   });
 
   // Resume API endpoint
