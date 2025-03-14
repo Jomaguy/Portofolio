@@ -34,11 +34,11 @@ export function NavBar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-24 items-center px-8">
+      <div className="flex h-32 items-center px-10">
         {/* Logo */}
-        <div className="flex-none mr-12">
+        <div className="flex-none mr-16">
           <Link href="/">
-            <span className="text-3xl font-bold flex items-center">Portfolio</span>
+            <span className="text-5xl font-bold flex items-center">Portfolio</span>
           </Link>
         </div>
         
@@ -46,15 +46,15 @@ export function NavBar() {
         <div className="flex-grow"></div>
         
         {/* Social links */}
-        <div className="hidden md:flex items-center mr-4">
-          <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer" className="mr-2">
-            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-muted/50">
-              <Github className="h-5 w-5" />
+        <div className="hidden md:flex items-center mr-8">
+          <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer" className="mr-4">
+            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+              <Github className="h-8 w-8" />
             </Button>
           </a>
-          <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer" className="mr-4">
-            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full border-2 hover:bg-muted/50">
-              <Linkedin className="h-5 w-5" />
+          <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer" className="mr-8">
+            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+              <Linkedin className="h-8 w-8" />
             </Button>
           </a>
         </div>
@@ -64,7 +64,7 @@ export function NavBar() {
           {rightRoutes.map((route) => (
             'href' in route && route.href ? (
               <Link key={route.href} href={route.href}>
-                <span className={`mr-4 flex items-center justify-center h-10 px-4 rounded-full border-2 transition-colors ${
+                <span className={`mr-6 flex items-center justify-center h-16 px-8 rounded-full border-2 transition-colors text-xl ${
                   location === route.href 
                     ? 'text-foreground font-semibold border-primary' 
                     : 'text-foreground/60 border-muted hover:bg-muted/50'
@@ -76,7 +76,7 @@ export function NavBar() {
               <button
                 key={'id' in route ? route.id : ''}
                 onClick={() => handleNavItemClick(route)}
-                className="mr-4 flex items-center justify-center h-10 px-4 rounded-full border-2 transition-colors text-foreground/60 border-muted hover:bg-muted/50"
+                className="mr-6 flex items-center justify-center h-16 px-8 rounded-full border-2 transition-colors text-foreground/60 border-muted hover:bg-muted/50 text-xl"
               >
                 {route.label}
               </button>
@@ -88,15 +88,15 @@ export function NavBar() {
         <div className="md:hidden ml-6">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-12 w-12">
-                <Menu className="h-8 w-8" />
+              <Button variant="ghost" size="icon" className="h-16 w-16">
+                <Menu className="h-10 w-10" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="left">
-              <nav className="flex flex-col space-y-8 mt-12">
+            <SheetContent side="left" className="w-[350px]">
+              <nav className="flex flex-col space-y-10 mt-16">
                 <Link href="/">
                   <span
-                    className={`text-2xl ${location === "/" ? 'text-foreground font-semibold' : 'text-foreground/60'}`}
+                    className={`text-4xl ${location === "/" ? 'text-foreground font-semibold' : 'text-foreground/60'}`}
                     onClick={() => setOpen(false)}
                   >
                     Home
@@ -107,7 +107,7 @@ export function NavBar() {
                   'href' in route && route.href ? (
                     <Link key={route.href} href={route.href}>
                       <span
-                        className={`text-2xl px-4 py-2 rounded-full border-2 inline-block ${
+                        className={`text-3xl px-6 py-4 rounded-full border-2 inline-block ${
                           location === route.href 
                             ? 'text-foreground font-semibold border-primary' 
                             : 'text-foreground/60 border-muted hover:bg-muted/50'
@@ -120,7 +120,7 @@ export function NavBar() {
                   ) : (
                     <button
                       key={'id' in route ? route.id : ''}
-                      className="text-2xl px-4 py-2 rounded-full border-2 inline-block text-foreground/60 border-muted hover:bg-muted/50"
+                      className="text-3xl px-6 py-4 rounded-full border-2 inline-block text-foreground/60 border-muted hover:bg-muted/50"
                       onClick={() => {
                         handleNavItemClick(route);
                         setOpen(false);
@@ -132,15 +132,15 @@ export function NavBar() {
                 ))}
                 
                 {/* Social links in mobile menu */}
-                <div className="flex space-x-4 pt-4">
+                <div className="flex space-x-6 pt-6">
                   <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-2 hover:bg-muted/50">
-                      <Github className="h-6 w-6" />
+                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+                      <Github className="h-9 w-9" />
                     </Button>
                   </a>
                   <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="icon" className="h-12 w-12 rounded-full border-2 hover:bg-muted/50">
-                      <Linkedin className="h-6 w-6" />
+                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+                      <Linkedin className="h-9 w-9" />
                     </Button>
                   </a>
                 </div>
