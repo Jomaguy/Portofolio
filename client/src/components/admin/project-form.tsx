@@ -31,7 +31,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 
 export function ProjectForm() {
   const { toast } = useToast();
-  const categories: ProjectCategory[] = ["Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "Other"];
+  const categories: ProjectCategory[] = ["Featured", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity"];
 
   const form = useForm<InsertProject>({
     resolver: zodResolver(insertProjectSchema),
@@ -40,7 +40,8 @@ export function ProjectForm() {
       description: "",
       image: "",
       technologies: [],
-      category: "Web Apps",
+      category: "Featured",
+      originalCategory: "Web Apps",
       link: "",
       github: "",
     },
@@ -144,7 +145,12 @@ export function ProjectForm() {
                 <FormItem>
                   <FormLabel>Category</FormLabel>
                   <Select 
-                    onValueChange={field.onChange}
+                    onValueChange={(value) => {
+                      field.onChange(value);
+                      if (value !== "Featured") {
+                        form.setValue("originalCategory", value);
+                      }
+                    }}
                     defaultValue={field.value}
                   >
                     <FormControl>
@@ -164,6 +170,36 @@ export function ProjectForm() {
                 </FormItem>
               )}
             />
+
+            {form.watch("category") === "Featured" && (
+              <FormField
+                control={form.control}
+                name="originalCategory"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Original Category (for Featured projects)</FormLabel>
+                    <Select 
+                      onValueChange={field.onChange}
+                      defaultValue={field.value ?? "Web Apps"}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select original category" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {categories.filter(cat => cat !== "Featured").map((category) => (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
 
             <FormField
               control={form.control}

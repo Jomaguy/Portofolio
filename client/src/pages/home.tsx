@@ -16,8 +16,8 @@ import { useQuery } from "@tanstack/react-query";
 import { getQueryFn } from "@/lib/queryClient";
 
 export default function Home() {
-  const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | "All">("All");
-  const categories: (ProjectCategory | "All")[] = ["All", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "Other"];
+  const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | "All">("Featured");
+  const categories: (ProjectCategory | "All")[] = ["Featured", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "All"];
 
   // Fetch projects directly from the public data file instead of the API
   const { data: projects = [], isLoading } = useQuery<Project[]>({
@@ -27,7 +27,15 @@ export default function Home() {
 
   const filteredProjects = selectedCategory === "All" 
     ? projects 
-    : projects.filter((project) => project.category === selectedCategory);
+    : projects.filter((project) => {
+        if (selectedCategory === "Featured") {
+          return project.category === "Featured";
+        } else {
+          // Show project if either its category matches OR if it's a Featured project with matching originalCategory
+          return project.category === selectedCategory || 
+                (project.category === "Featured" && project.originalCategory === selectedCategory);
+        }
+      });
 
   return (
     <div className="flex flex-col items-center">
