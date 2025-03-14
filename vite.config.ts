@@ -25,7 +25,8 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, "client/index.html")
+      input: path.resolve(__dirname, "client/index.html"),
+      external: ['zod']
     }
   },
   publicDir: path.resolve(__dirname, "client/public"),
@@ -34,5 +35,8 @@ export default defineConfig({
     // Expose VITE_ prefixed env variables to the client
     'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(process.env.VITE_GEMINI_API_KEY),
     'import.meta.env.VITE_HUGGINGFACE_API_KEY': JSON.stringify(process.env.VITE_HUGGINGFACE_API_KEY)
+  },
+  optimizeDeps: {
+    include: ['zod']
   }
 });
