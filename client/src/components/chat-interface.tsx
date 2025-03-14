@@ -211,13 +211,13 @@ export function ChatInterface() {
 
   // Fetch projects to include in the context for the AI
   const { data: projects = [] } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["/data/projects.json"],
     queryFn: getQueryFn<Project[]>({ on401: "throw" }),
   });
 
   // Fetch resume data to include in the context for the AI
   const { data: resume } = useQuery({
-    queryKey: ["/api/resume"],
+    queryKey: ["/data/resume.json"],
     queryFn: getQueryFn({ on401: "throw" }),
   });
 
