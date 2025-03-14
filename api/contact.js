@@ -20,6 +20,9 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Log request body for debugging
+    console.log('Request body:', JSON.stringify(req.body));
+    
     // Parse and validate request data
     const { name, email, message } = contactSchema.parse(req.body);
     
@@ -27,12 +30,15 @@ export default async function handler(req, res) {
 
     // Email setup
     if (!process.env.SMTP_PASS || !process.env.SENDER_EMAIL || !process.env.RECIPIENT_EMAIL) {
+      console.error('Missing required email configuration environment variables');
       throw new Error('Missing required email configuration environment variables');
     }
 
     const SENDER_EMAIL = process.env.SENDER_EMAIL;
     const RECIPIENT_EMAIL = process.env.RECIPIENT_EMAIL;
     const SMTP_PASS = process.env.SMTP_PASS;
+
+    console.log('Email configuration loaded successfully');
 
     const transporter = nodemailer.createTransport({
       service: 'SendGrid',
@@ -43,6 +49,7 @@ export default async function handler(req, res) {
     });
 
     // Send email
+    console.log('Attempting to send email...');
     await transporter.sendMail({
       from: {
         name: "Jonathan Mahrt",
@@ -65,7 +72,9 @@ export default async function handler(req, res) {
     res.status(200).json({ message: "Email sent successfully" });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
+    const errorStack = error instanceof Error ? error.stack : 'No stack trace';
     console.error("Email sending error:", errorMessage);
+    console.error("Error stack:", errorStack);
     
     if (error instanceof z.ZodError) {
       return res.status(400).json({ message: "Invalid form data", details: error.errors });
