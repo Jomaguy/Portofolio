@@ -5,7 +5,7 @@ import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { z } from "zod";
 // Import the projects data directly
-import importedProjectsData from '../projects.json' assert { type: "json" };
+// import importedProjectsData from '../projects.json' assert { type: "json" };
 
 export interface IStorage {
   // Project operations
@@ -140,19 +140,12 @@ export class FileStorage implements IStorage {
         console.error(`Error creating data directory: ${this.dataDir}`, error);
       }
       
-      console.log('Using directly imported projects data');
-      // Start with the imported projects data - this will always work regardless of environment
-      this.projects = [...importedProjectsData];
-      this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
-      console.log(`Loaded ${this.projects.length} projects from imported data`);
+      // Initialize with empty array
+      this.projects = [];
       
-      // We'll still try to read from files for development purposes
-      // but our bundled data is now the default fallback
-      let projectsLoadedFromFile = false;
-      
-      // Try primary data location
+      // Load projects from data/projects.json - single source of truth
       try {
-        console.log(`Attempting to read projects from: ${this.projectsFile}`);
+        console.log(`Loading projects from: ${this.projectsFile}`);
         const projectsData = await fs.readFile(this.projectsFile, 'utf-8');
         console.log(`Successfully read projects data, length: ${projectsData.length}`);
         const fileProjects = JSON.parse(projectsData);
@@ -161,33 +154,21 @@ export class FileStorage implements IStorage {
         if (fileProjects && fileProjects.length > 0) {
           this.projects = fileProjects;
           this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
-          console.log(`Loaded ${this.projects.length} projects from data directory`);
-          projectsLoadedFromFile = true;
+          console.log(`Loaded ${this.projects.length} projects from data/projects.json`);
+          
+          // Ensure client/public has the same data for frontend access
+          await this.saveProjects();
+        } else {
+          console.warn("No projects found in data/projects.json, initializing with empty array");
         }
       } catch (error) {
-        console.error(`Error reading projects file from data dir: ${this.projectsFile}`, error);
-      }
-        
-      // Try root directory as second fallback (only if file reading failed)
-      if (!projectsLoadedFromFile) {
-        try {
-          const rootProjectsPath = path.join(process.cwd(), 'projects.json');
-          console.log(`Attempting to read projects from root: ${rootProjectsPath}`);
-          const rootProjectsData = await fs.readFile(rootProjectsPath, 'utf-8');
-          console.log(`Successfully read projects from root, length: ${rootProjectsData.length}`);
-          const rootProjects = JSON.parse(rootProjectsData);
-          
-          // Only update if we have projects in the file
-          if (rootProjects && rootProjects.length > 0) {
-            this.projects = rootProjects;
-            this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
-            console.log(`Loaded ${this.projects.length} projects from root file`);
-            // Save to the normal location for future use
-            await this.saveProjects();
-          }
-        } catch (rootError) {
-          console.error(`Error reading root projects file`, rootError);
-        }
+        console.error(`Error reading projects file: ${this.projectsFile}`, error);
+        console.log("Initializing with sample project data as fallback");
+        // Use the sample data from schema as a fallback
+        this.projects = projectData;
+        this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
+        // Save this to the file for future use
+        await this.saveProjects();
       }
 
       // Initialize users
@@ -206,7 +187,17 @@ export class FileStorage implements IStorage {
   }
 
   private async saveProjects() {
+    // Save to the data directory
     await fs.writeFile(this.projectsFile, JSON.stringify(this.projects, null, 2), 'utf-8');
+    
+    try {
+      // Also save to client/public/projects.json to keep frontend data in sync
+      const clientPublicPath = path.join(process.cwd(), 'client', 'public', 'projects.json');
+      await fs.writeFile(clientPublicPath, JSON.stringify(this.projects, null, 2), 'utf-8');
+      console.log('Projects saved to both data directory and client/public for frontend use');
+    } catch (error) {
+      console.error('Error saving projects to client/public directory:', error);
+    }
   }
 
   private async saveUsers() {

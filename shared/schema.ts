@@ -14,6 +14,7 @@ export const projects = pgTable("projects", {
   image: text("image").notNull(),
   technologies: text("technologies").array().notNull(),
   category: text("category").notNull(),
+  originalCategory: text("original_category"),
   link: text("link"),
   github: text("github"),
   videoWalkthrough: text("video_walkthrough"),
@@ -25,7 +26,7 @@ export const insertProjectSchema = createInsertSchema(projects);
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
 
-export type ProjectCategory = "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Cybersecurity" | "Other";
+export type ProjectCategory = "Featured" | "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Cybersecurity";
 
 // User types (for backward compatibility)
 export interface User {
@@ -48,6 +49,7 @@ export const projectData: Project[] = [
     image: "https://images.unsplash.com/photo-1592609931095-54a2168ae893",
     technologies: ["JavaScript", "Monaco Editor", "Golden Layout", "Semantic UI", "Event-Driven Architecture"],
     category: "Web Apps",
+    originalCategory: null,
     link: "https://web-ide.example.com",
     github: "https://github.com/example/web-ide",
     videoWalkthrough: null,

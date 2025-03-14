@@ -10,7 +10,8 @@
       "Machine Learning",
       "AI"
     ],
-    "category": "Web Apps",
+    "category": "Featured",
+    "originalCategory": "Web Apps",
     "link": "https://clickclock.example.com",
     "github": "https://github.com/Jomaguy/Click-Clock-V3",
     "videoWalkthrough": "https://example.com/click-clock-walkthrough"
@@ -57,7 +58,8 @@
       "DOM Management",
       "Event Handling"
     ],
-    "category": "Chrome Extensions",
+    "category": "Featured",
+    "originalCategory": "Chrome Extensions",
     "github": "https://github.com/Jomaguy/chat-genius",
     "videoWalkthrough": null,
     "details": "Experience the future of professional communication with AI-assisted message composition that understands context, maintains professionalism, and helps you communicate more effectively on LinkedIn.",
@@ -129,7 +131,8 @@
       "Machine Learning",
       "Mathematical Algorithms"
     ],
-    "category": "Web Apps",
+    "category": "Featured",
+    "originalCategory": "Web Apps",
     "link": "https://euler-ai.example.com",
     "github": "https://github.com/Jomaguy/euler-ai",
     "videoWalkthrough": null
@@ -145,7 +148,8 @@
       "SQL",
       "PayPal API"
     ],
-    "category": "Web Apps",
+    "category": "Featured",
+    "originalCategory": "Web Apps",
     "link": "https://bojo-university.example.com",
     "github": "https://github.com/Jomaguy/BoJo",
     "videoWalkthrough": null
@@ -162,7 +166,8 @@
       "Security",
       "Cloud Computing"
     ],
-    "category": "Web Apps",
+    "category": "Featured",
+    "originalCategory": "Web Apps",
     "buttons": [
       {
         "label": "Website",
