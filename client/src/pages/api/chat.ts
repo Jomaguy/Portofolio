@@ -11,6 +11,19 @@ const handleHuggingFaceRequest = async (messages: Message[]): Promise<string> =>
   }
 };
 
+interface ApiRequest {
+  method: string;
+  body: {
+    messages?: Message[];
+    [key: string]: any;
+  };
+}
+
+interface ApiResponse {
+  status: (code: number) => ApiResponse;
+  json: (data: any) => void;
+}
+
 export default async function handler(
   req: Request,
   res: Response
