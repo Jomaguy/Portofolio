@@ -25,7 +25,8 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, "client/index.html")
+      input: path.resolve(__dirname, "client/index.html"),
+      external: ['zod']
     }
   },
   publicDir: path.resolve(__dirname, "client/public"),
