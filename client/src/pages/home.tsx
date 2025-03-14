@@ -21,7 +21,7 @@ export default function Home() {
 
   // Fetch projects directly from the public data file instead of the API
   const { data: projects = [], isLoading } = useQuery<Project[]>({
-    queryKey: ["/data/projects.json"],
+    queryKey: ["/projects.json"],
     queryFn: getQueryFn<Project[]>({ on401: "throw" }),
   });
 

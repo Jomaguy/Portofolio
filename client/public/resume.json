@@ -1,0 +1,176 @@
+{
+  "basics": {
+    "name": "Jonathan Mahrt Guyou",
+    "label": "Software Engineer",
+    "email": "jonathanmahrt@icloud.com",
+    "phone": "",
+    "website": "",
+    "summary": "Software Engineer with experience in full-stack development, mobile applications, and entrepreneurship.",
+    "location": {
+      "city": "NYC",
+      "countryCode": "US",
+      "region": "New York"
+    },
+    "profiles": [
+      {
+        "network": "LinkedIn",
+        "username": "jonathan-mahrt-guyou",
+        "url": "https://www.linkedin.com/in/jonathan-mahrt-guyou"
+      },
+      {
+        "network": "GitHub",
+        "username": "Jomaguy",
+        "url": "https://github.com/Jomaguy"
+      }
+    ]
+  },
+  "work": [
+    {
+      "company": "HYEL",
+      "position": "Software Engineer",
+      "website": "",
+      "startDate": "2024-10",
+      "endDate": "2024-12",
+      "summary": "Led development of Swift-based iOS games",
+      "highlights": [
+        "Led development of Swift-based iOS games, gaining expertise in mobile game architecture and UIKit animations",
+        "Designed CoreData persistence layer enabling offline gameplay and seamless user progress syncing",
+        "Implemented custom SpriteKit physics and particle systems, enhancing visual quality while maintaining 60 FPS"
+      ]
+    },
+    {
+      "company": "Laurel Links",
+      "position": "Software Engineer",
+      "website": "",
+      "startDate": "2024-05",
+      "endDate": "2024-10",
+      "summary": "Built a full-stack website with React JS frontend and Firebase backend",
+      "highlights": [
+        "Built a full-stack website with React JS frontend and Firebase backend to streamline user interactions",
+        "Resolved 500+ technical issues for users, increasing user satisfaction scores by 25% and site reliability by 40%",
+        "Boosted user interaction 40% with a custom system that streamlined communication, sign-ups, and updates"
+      ]
+    },
+    {
+      "company": "Teamwyrk",
+      "position": "Software Engineer Intern",
+      "website": "",
+      "startDate": "2023-10",
+      "endDate": "2024-05",
+      "summary": "Developed and maintained Teamwyrk's website",
+      "highlights": [
+        "Developed and maintained Teamwyrk's website, enhancing user experience and system performance",
+        "Built a Firebase backend managing data for 1000+ users and designed intuitive UI with React JS",
+        "Implemented responsive design and cross-browser compatibility, reducing bounce rates by 35%"
+      ]
+    },
+    {
+      "company": "BoJo",
+      "position": "Founder & Software Engineer",
+      "website": "",
+      "startDate": "2021-09",
+      "endDate": "2023-09",
+      "summary": "Led development of a university-matching app with automated features",
+      "highlights": [
+        "Led development of a university-matching app with automated features, helping 1000+ students find schools",
+        "Built proprietary matching algorithm, integrated PayPal API, and implemented automated customer service",
+        "Conducted market research with counselors, admissions officers, parents, and students to refine product fit",
+        "Placed top 3 in 2 entrepreneurship contests, earning funding and recognition for innovation and business potential"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Hofstra University",
+      "area": "Computer Science",
+      "studyType": "Master of Science",
+      "startDate": "2023-09",
+      "endDate": "2024-08",
+      "gpa": "",
+      "courses": [],
+      "description": "Concentration in Networking and Security"
+    },
+    {
+      "institution": "Hofstra University",
+      "area": "Computer Science and Cybersecurity",
+      "studyType": "Bachelor of Science",
+      "startDate": "2019-09",
+      "endDate": "2023-05",
+      "gpa": "",
+      "courses": [],
+      "description": "Honors: As a Student-Athlete: Captain, Division 1 Men's Tennis Team — Dean's List x 8"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Chat Genius",
+      "description": "AI-powered LinkedIn messaging extension with 50+ active beta users",
+      "highlights": [
+        "Developed an AI-powered LinkedIn messaging extension with 50+ active beta users",
+        "Built a context-aware system that analyzes conversation history for relevant responses",
+        "Implemented a modular architecture with persistent storage and error recovery"
+      ],
+      "keywords": ["JavaScript", "Chrome Extensions API", "REST APIs", "Google Gemini AI"],
+      "startDate": "2025-02",
+      "endDate": "Present",
+      "url": ""
+    },
+    {
+      "name": "Click Clock",
+      "description": "TikTok-like video platform with 100+ users",
+      "highlights": [
+        "Built a TikTok-like video platform with 100+ users, featuring responsive playback and authentication",
+        "Built a real-time engagement system with comments, likes, and personalized video recommendations",
+        "Implemented Firebase backend with Next.js frontend for optimal performance and scalability"
+      ],
+      "keywords": ["Next.js", "Google Cloud", "Vertex AI", "Firebase", "BigQuery", "Tailwind CSS"],
+      "startDate": "2025-02",
+      "endDate": "Present",
+      "url": ""
+    }
+  ],
+  "skills": [
+    {
+      "name": "Programming Languages",
+      "level": "Advanced",
+      "keywords": ["Python", "JavaScript", "TypeScript", "SQL", "Swift"]
+    },
+    {
+      "name": "Frameworks & Libraries",
+      "level": "Advanced",
+      "keywords": ["React", "Next.js", "Node.js", "Flask", "FastAPI", "Tailwind CSS", "Chrome Extensions API"]
+    },
+    {
+      "name": "Cloud & AI",
+      "level": "Intermediate",
+      "keywords": ["Firebase", "Google Cloud Platform", "Google Gemini AI", "Vertex AI", "BigQuery", "OpenAI"]
+    },
+    {
+      "name": "Developer Tools",
+      "level": "Advanced",
+      "keywords": ["Git", "Docker", "VS Code", "Visual Studio", "Cursor", "Xcode", "Monaco Editor"]
+    }
+  ],
+  "languages": [
+    {
+      "language": "English",
+      "fluency": "Fluent"
+    },
+    {
+      "language": "French",
+      "fluency": "Fluent"
+    },
+    {
+      "language": "Spanish",
+      "fluency": "Fluent"
+    },
+    {
+      "language": "Danish",
+      "fluency": "Fluent"
+    },
+    {
+      "language": "Catalan",
+      "fluency": "Fluent"
+    }
+  ]
+} 

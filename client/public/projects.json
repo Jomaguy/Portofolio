@@ -1,0 +1,181 @@
+[
+  {
+    "id": 1,
+    "title": "Click Clock - Social Video Platform",
+    "description": "Built a TikTok-style video platform using Next.js and TypeScript, achieving seamless video delivery with optimized playback and progress tracking. Implemented an AI-powered recommendation system using machine learning algorithms, delivering personalized content with 95% user engagement. Developed a responsive video player component with infinite scroll and autoplay, processing 1000+ video interactions daily.",
+    "image": "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7",
+    "technologies": [
+      "Next.js",
+      "TypeScript",
+      "Machine Learning",
+      "AI"
+    ],
+    "category": "Web Apps",
+    "link": "https://clickclock.example.com",
+    "github": "https://github.com/Jomaguy/Click-Clock-V3",
+    "videoWalkthrough": "https://example.com/click-clock-walkthrough"
+  },
+  {
+    "id": 2,
+    "title": "Frenzy Escape",
+    "description": "Developed a dynamic mobile game using Swift and SpriteKit, featuring a character navigating through scrolling environments and challenging obstacles. Integrated GameKit for multiplayer functionality and leaderboards, allowing players to compete for high scores across multiple challenging levels. The game showcased advanced iOS game development techniques and smooth gameplay mechanics.",
+    "image": "https://images.unsplash.com/photo-1635886840360-a2d27a5826d0",
+    "technologies": [
+      "Swift",
+      "SpriteKit",
+      "GameKit",
+      "iOS Development"
+    ],
+    "category": "Mobile Apps",
+    "github": "https://github.com/Jomaguy/Fruit_Frenzy_Escape",
+    "videoWalkthrough": null
+  },
+  {
+    "id": 3,
+    "title": "Fruit Frenzy",
+    "description": "Created an engaging survival-style mobile game where players control a fruit character trying to escape from zombie fruits. The game features intuitive thumb-based controls for smooth character movement, challenging enemy AI patterns, and progressive difficulty scaling. Built with Swift and SpriteKit, demonstrating proficiency in mobile game development and user experience design.",
+    "image": "https://images.unsplash.com/photo-1573246123716-6b1782bfc499",
+    "technologies": [
+      "Swift",
+      "SpriteKit",
+      "iOS Development",
+      "Game Design"
+    ],
+    "category": "Mobile Apps",
+    "github": "https://github.com/Jomaguy/Fruit-Frenzy",
+    "videoWalkthrough": null
+  },
+  {
+    "id": 4,
+    "title": "Chat Genius - AI-Powered LinkedIn Assistant",
+    "description": "Developed an AI-powered LinkedIn messaging extension with 50+ active beta users. Built a context-aware system that analyzes conversation history and recipient profiles to generate professional message suggestions in real-time. Implemented features like ghost text preview, conversation intelligence, and professional tone matching. Created a modular architecture with persistent storage and robust error handling for seamless user experience.",
+    "image": "https://images.unsplash.com/photo-1611944212129-29977ae1398c",
+    "technologies": [
+      "JavaScript",
+      "REST APIs",
+      "Google Gemini AI",
+      "DOM Management",
+      "Event Handling"
+    ],
+    "category": "Chrome Extensions",
+    "github": "https://github.com/Jomaguy/chat-genius",
+    "videoWalkthrough": null,
+    "details": "Experience the future of professional communication with AI-assisted message composition that understands context, maintains professionalism, and helps you communicate more effectively on LinkedIn.",
+    "buttons": [
+      {
+        "label": "Chrome Store",
+        "url": "https://chrome.google.com/webstore/detail/chat-genius/example"
+      }
+    ]
+  },
+  {
+    "id": 5,
+    "title": "Custodio - Anti-virus Application",
+    "description": "Led a collaborative software engineering project to develop a comprehensive antivirus application with a user-friendly GUI for Windows, leveraging ClamAV for robust scanning capabilities. Implemented multiple scanning modes including full-system scans, quick scans, and scheduled scans to ensure thorough protection while providing flexibility for users. The application features real-time threat detection, quarantine management, and detailed scan reports to enhance system security.",
+    "image": "https://images.unsplash.com/photo-1614064641938-3bbee52942c7",
+    "technologies": [
+      "C++",
+      "HTML",
+      "ClamAV",
+      "JavaScript",
+      "CSS"
+    ],
+    "category": "Cybersecurity",
+    "github": "https://github.com/Jomaguy/Custodio-",
+    "videoWalkthrough": null,
+    "details": "A team project with 3 contributors that combines robust security scanning with an intuitive user interface."
+  },
+  {
+    "id": 6,
+    "title": "AI-Powered Spam Classifier",
+    "description": "Developed an email spam classifier with Scikit-learn and PyTorch, achieving 99% accuracy in real-time spam detection and filtering. Integrated the classifier with email systems using Python's Imaplib, enabling automatic processing of 1000+ emails daily. Developed a Flask API to integrate the spam classifier with several email platforms, streamlining enterprise deployment and enhancing email security across organizations.",
+    "image": "https://images.unsplash.com/photo-1563986768609-322da13575f3",
+    "technologies": [
+      "Python",
+      "Scikit-learn",
+      "PyTorch",
+      "Flask",
+      "Imaplib"
+    ],
+    "category": "Cybersecurity",
+    "github": "https://github.com/Jomaguy/spam-classifier",
+    "videoWalkthrough": null
+  },
+  {
+    "id": 7,
+    "title": "AI-Powered Web Application Firewall",
+    "description": "Built and deployed an AI-powered Web Application Firewall (WAF) using LAMP stack, Python, Flask, and Scikit-learn, successfully blocking 99% of malicious traffic. Trained a machine learning model to classify HTTP requests, integrating it with a Python API for real-time analysis. Integrated the WAF with Apache and implemented MySQL logging to monitor traffic patterns and enable continuous model improvement through feedback loops.",
+    "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c",
+    "technologies": [
+      "Python",
+      "PHP",
+      "Deep Learning",
+      "Apache",
+      "MySQL"
+    ],
+    "category": "Cybersecurity",
+    "github": "https://github.com/Jomaguy/WebApplicationFirewall",
+    "videoWalkthrough": null
+  },
+  {
+    "id": 8,
+    "title": "Project-Euler.ai - AI-Enhanced Mathematical Problem Solving",
+    "description": "Inspired by Project Euler, this platform combines a VS Code-like IDE with AI assistance to help users tackle challenging mathematical and programming problems. Features include real-time code editing, AI-powered hints, and an integrated learning path.",
+    "image": "/images/euler-portrait-fitted.jpg",
+    "technologies": [
+      "JavaScript",
+      "Monaco Editor",
+      "Golden Layout",
+      "Machine Learning",
+      "Mathematical Algorithms"
+    ],
+    "category": "Web Apps",
+    "link": "https://euler-ai.example.com",
+    "github": "https://github.com/Jomaguy/euler-ai",
+    "videoWalkthrough": null
+  },
+  {
+    "id": 9,
+    "title": "BoJo - University Matching Platform",
+    "description": "A comprehensive university-matching web application that helped over 1,000 students find their ideal universities. Features include an advanced matching algorithm, PayPal integration for payments, and automated customer service. The project earned recognition in entrepreneurship contests and demonstrated strong market validation through extensive research with stakeholders.",
+    "image": "https://images.unsplash.com/photo-1541339907198-e08756dedf3f",
+    "technologies": [
+      ".NET",
+      "C#",
+      "SQL",
+      "PayPal API"
+    ],
+    "category": "Web Apps",
+    "link": "https://bojo-university.example.com",
+    "github": "https://github.com/Jomaguy/BoJo",
+    "videoWalkthrough": null
+  },
+  {
+    "id": 10,
+    "title": "Puter - The Internet OS (Open Source Contribution)",
+    "description": "Contributed to Puter, an advanced open-source internet operating system, by implementing a crucial Captcha verification system. The contribution enhanced platform security by preventing service abuse while maintaining accessibility for legitimate users. The implementation followed modern endpoint architecture patterns and integrated seamlessly with the existing PermissionAPIService.",
+    "image": "https://images.unsplash.com/photo-1629654297299-c8506221ca97",
+    "technologies": [
+      "JavaScript",
+      "Node.js",
+      "API Development",
+      "Security",
+      "Cloud Computing"
+    ],
+    "category": "Web Apps",
+    "buttons": [
+      {
+        "label": "Website",
+        "url": "https://puter.com"
+      },
+      {
+        "label": "Code",
+        "url": "https://github.com/heyPuter/puter"
+      },
+      {
+        "label": "Details",
+        "url": "https://docs.puter.com"
+      }
+    ]
+  }
+]
