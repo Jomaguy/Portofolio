@@ -51,7 +51,14 @@ export function ContactFormModal({ open, onOpenChange }: ContactFormModalProps) 
   async function onSubmit(data: ContactFormData) {
     setIsSubmitting(true);
     try {
-      await apiRequest("POST", "/api/contact", data);
+      const response = await apiRequest("POST", "/api/contact", data);
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: "Unknown error occurred" }));
+        console.error("Contact form error:", errorData);
+        throw new Error(errorData.message || "Failed to send message");
+      }
+      
       setIsSuccess(true);
       form.reset();
       // Don't close the modal immediately, show success message first
@@ -61,8 +68,9 @@ export function ContactFormModal({ open, onOpenChange }: ContactFormModalProps) 
       }, 2000);
     } catch (error) {
       setIsSuccess(false);
-      // Show error message
-      alert("Failed to send message. Please try again later.");
+      console.error("Contact form submission error:", error);
+      // Show more detailed error message
+      alert(`Failed to send message: ${error instanceof Error ? error.message : "Please try again later."}`);
     } finally {
       setIsSubmitting(false);
     }

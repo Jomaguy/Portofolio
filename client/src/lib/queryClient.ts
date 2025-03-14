@@ -12,12 +12,20 @@ export async function apiRequest(
   url: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
+  // Determine if we're in production
+  const isProduction = import.meta.env.PROD;
+  
+  // Set proper options for fetch
+  const options: RequestInit = {
     method,
     headers: data ? { "Content-Type": "application/json" } : {},
     body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+    // In production environment, we might need to adjust this
+    credentials: isProduction ? "same-origin" : "include",
+    mode: "cors"
+  };
+  
+  const res = await fetch(url, options);
 
   await throwIfResNotOk(res);
   return res;
@@ -29,8 +37,12 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
+    // Determine if we're in production
+    const isProduction = import.meta.env.PROD;
+    
     const res = await fetch(queryKey[0] as string, {
-      credentials: "include",
+      credentials: isProduction ? "same-origin" : "include",
+      mode: "cors"
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
