@@ -1,3 +1,4 @@
+import { type Request, type Response } from 'express';
 import { sendMessageToHuggingFace, type Message } from '@/services/huggingface';
 
 // Handle Hugging Face API requests
@@ -24,8 +25,8 @@ interface ApiResponse {
 }
 
 export default async function handler(
-  req: ApiRequest,
-  res: ApiResponse
+  req: Request,
+  res: Response
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });

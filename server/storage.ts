@@ -1,4 +1,4 @@
-import { type Project, type InsertProject, type User, type InsertUser, projectData, type ProjectButton } from "@shared/schema";
+import { type Project, type InsertProject, type User, type InsertUser, projectData, type ProjectButton } from "@shared/schema.js";
 import fs from 'fs/promises';
 import path from 'path';
 import { readFile, writeFile } from "fs/promises";
