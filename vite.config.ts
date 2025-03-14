@@ -34,5 +34,8 @@ export default defineConfig({
     // Expose VITE_ prefixed env variables to the client
     'import.meta.env.VITE_GEMINI_API_KEY': JSON.stringify(process.env.VITE_GEMINI_API_KEY),
     'import.meta.env.VITE_HUGGINGFACE_API_KEY': JSON.stringify(process.env.VITE_HUGGINGFACE_API_KEY)
+  },
+  optimizeDeps: {
+    include: ['zod']
   }
 });
