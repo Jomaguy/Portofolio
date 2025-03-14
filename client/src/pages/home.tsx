@@ -19,9 +19,9 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | "All">("All");
   const categories: (ProjectCategory | "All")[] = ["All", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "Other"];
 
-  // Fetch projects from the API
+  // Fetch projects directly from the public data file instead of the API
   const { data: projects = [], isLoading } = useQuery<Project[]>({
-    queryKey: ["/api/projects"],
+    queryKey: ["/data/projects.json"],
     queryFn: getQueryFn<Project[]>({ on401: "throw" }),
   });
 
