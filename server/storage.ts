@@ -4,6 +4,8 @@ import path from 'path';
 import { readFile, writeFile } from "fs/promises";
 import { join } from "path";
 import { z } from "zod";
+// Import the projects data directly
+import importedProjectsData from '../projects.json' assert { type: "json" };
 
 export interface IStorage {
   // Project operations
@@ -138,45 +140,54 @@ export class FileStorage implements IStorage {
         console.error(`Error creating data directory: ${this.dataDir}`, error);
       }
       
-      // Initialize projects - with better error handling
-      let projectsLoaded = false;
+      console.log('Using directly imported projects data');
+      // Start with the imported projects data - this will always work regardless of environment
+      this.projects = [...importedProjectsData];
+      this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
+      console.log(`Loaded ${this.projects.length} projects from imported data`);
+      
+      // We'll still try to read from files for development purposes
+      // but our bundled data is now the default fallback
+      let projectsLoadedFromFile = false;
       
       // Try primary data location
       try {
         console.log(`Attempting to read projects from: ${this.projectsFile}`);
         const projectsData = await fs.readFile(this.projectsFile, 'utf-8');
         console.log(`Successfully read projects data, length: ${projectsData.length}`);
-        this.projects = JSON.parse(projectsData);
-        this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
-        console.log(`Loaded ${this.projects.length} projects from data directory`);
-        projectsLoaded = true;
+        const fileProjects = JSON.parse(projectsData);
+        
+        // Only update if we have projects in the file
+        if (fileProjects && fileProjects.length > 0) {
+          this.projects = fileProjects;
+          this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
+          console.log(`Loaded ${this.projects.length} projects from data directory`);
+          projectsLoadedFromFile = true;
+        }
       } catch (error) {
         console.error(`Error reading projects file from data dir: ${this.projectsFile}`, error);
       }
         
-      // Try root directory as fallback
-      if (!projectsLoaded) {
+      // Try root directory as second fallback (only if file reading failed)
+      if (!projectsLoadedFromFile) {
         try {
           const rootProjectsPath = path.join(process.cwd(), 'projects.json');
           console.log(`Attempting to read projects from root: ${rootProjectsPath}`);
           const rootProjectsData = await fs.readFile(rootProjectsPath, 'utf-8');
           console.log(`Successfully read projects from root, length: ${rootProjectsData.length}`);
-          this.projects = JSON.parse(rootProjectsData);
-          this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
-          console.log(`Loaded ${this.projects.length} projects from root file`);
-          projectsLoaded = true;
-          // Save to the normal location for future use
-          await this.saveProjects();
+          const rootProjects = JSON.parse(rootProjectsData);
+          
+          // Only update if we have projects in the file
+          if (rootProjects && rootProjects.length > 0) {
+            this.projects = rootProjects;
+            this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
+            console.log(`Loaded ${this.projects.length} projects from root file`);
+            // Save to the normal location for future use
+            await this.saveProjects();
+          }
         } catch (rootError) {
           console.error(`Error reading root projects file`, rootError);
         }
-      }
-      
-      // If all attempts failed, use sample data
-      if (!projectsLoaded) {
-        console.log('Initializing with sample project data');
-        this.projects = [...projectData];
-        await this.saveProjects();
       }
 
       // Initialize users
