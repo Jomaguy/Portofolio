@@ -52,6 +52,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/contact", async (req, res) => {
     try {
       const { name, email, message } = contactSchema.parse(req.body);
+      
+      console.log(`Attempting to send email from ${email} with subject: Portfolio Contact Form: Message from ${name}`);
 
       await transporter.sendMail({
         from: {
@@ -71,10 +73,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         `,
       });
 
+      console.log("Email sent successfully");
       res.json({ message: "Email sent successfully" });
     } catch (error) {
-      console.error("Email sending error:", error);
-      res.status(500).json({ message: "Failed to send email" });
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error("Email sending error:", errorMessage);
+      
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid form data", details: error.errors });
+      }
+      
+      res.status(500).json({ message: "Failed to send email", details: errorMessage });
     }
   });
 
