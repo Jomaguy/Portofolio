@@ -138,19 +138,24 @@ export class FileStorage implements IStorage {
         console.error(`Error creating data directory: ${this.dataDir}`, error);
       }
       
-      // Initialize projects
+      // Initialize projects - with better error handling
+      let projectsLoaded = false;
+      
+      // Try primary data location
       try {
         console.log(`Attempting to read projects from: ${this.projectsFile}`);
         const projectsData = await fs.readFile(this.projectsFile, 'utf-8');
         console.log(`Successfully read projects data, length: ${projectsData.length}`);
         this.projects = JSON.parse(projectsData);
-        // Find the highest project ID to set the next ID
         this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
-        console.log(`Loaded ${this.projects.length} projects`);
+        console.log(`Loaded ${this.projects.length} projects from data directory`);
+        projectsLoaded = true;
       } catch (error) {
-        console.error(`Error reading projects file: ${this.projectsFile}`, error);
+        console.error(`Error reading projects file from data dir: ${this.projectsFile}`, error);
+      }
         
-        // Try reading from root directory as a fallback
+      // Try root directory as fallback
+      if (!projectsLoaded) {
         try {
           const rootProjectsPath = path.join(process.cwd(), 'projects.json');
           console.log(`Attempting to read projects from root: ${rootProjectsPath}`);
@@ -159,15 +164,19 @@ export class FileStorage implements IStorage {
           this.projects = JSON.parse(rootProjectsData);
           this.currentProjectId = Math.max(...this.projects.map(p => p.id), 0) + 1;
           console.log(`Loaded ${this.projects.length} projects from root file`);
+          projectsLoaded = true;
           // Save to the normal location for future use
           await this.saveProjects();
         } catch (rootError) {
           console.error(`Error reading root projects file`, rootError);
-          // If file doesn't exist or is invalid, initialize with sample data
-          console.log('Initializing with sample project data');
-          this.projects = [...projectData];
-          await this.saveProjects();
         }
+      }
+      
+      // If all attempts failed, use sample data
+      if (!projectsLoaded) {
+        console.log('Initializing with sample project data');
+        this.projects = [...projectData];
+        await this.saveProjects();
       }
 
       // Initialize users

@@ -26,7 +26,8 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: path.resolve(__dirname, "client/index.html")
-    }
+    },
+    chunkSizeWarningLimit: 1000
   },
   publicDir: path.resolve(__dirname, "client/public"),
   // Define environment variables that should be exposed to the client
