@@ -33,12 +33,7 @@ export default defineConfig({
     outDir: path.resolve(__dirname, "dist"),
     emptyOutDir: true,
     rollupOptions: {
-      input: path.resolve(__dirname, "client/index.html"),
-      external: [
-        'zod',
-        '@hookform/resolvers/zod',
-        '@tanstack/react-query'
-      ]
+      input: path.resolve(__dirname, "client/index.html")
     }
   },
   publicDir: path.resolve(__dirname, "client/public"),
