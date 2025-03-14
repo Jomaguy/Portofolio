@@ -13,22 +13,11 @@ export default defineConfig({
     react(),
     runtimeErrorOverlay(),
     themePlugin(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer(),
-          ),
-        ]
-      : []),
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "client", "src"),
-      "@shared": path.resolve(__dirname, "shared"),
-      "zod": path.resolve(__dirname, "node_modules/zod"),
-      "@hookform/resolvers/zod": path.resolve(__dirname, "node_modules/@hookform/resolvers/zod"),
-      "@tanstack/react-query": path.resolve(__dirname, "node_modules/@tanstack/react-query")
+      "@shared": path.resolve(__dirname, "shared")
     }
   },
   root: path.resolve(__dirname, "client"),
@@ -38,9 +27,6 @@ export default defineConfig({
     rollupOptions: {
       input: path.resolve(__dirname, "client/index.html")
     }
-  },
-  optimizeDeps: {
-    include: ['zod', '@hookform/resolvers/zod', '@tanstack/react-query']
   },
   publicDir: path.resolve(__dirname, "client/public"),
   // Define environment variables that should be exposed to the client

@@ -49,11 +49,7 @@ app.use((req, res, next) => {
     throw err;
   });
 
-  if (app.get("env") === "development") {
-    await setupVite(app, server);
-  } else {
-    serveStatic(app);
-  }
+  await setupVite(app, server);
 
   const port = 3000;
   server.listen({
