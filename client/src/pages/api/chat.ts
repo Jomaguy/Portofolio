@@ -1,4 +1,4 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+import { type Request, type Response } from 'express';
 import { sendMessageToHuggingFace, type Message } from '@/services/huggingface';
 
 // Handle Hugging Face API requests
@@ -12,8 +12,8 @@ const handleHuggingFaceRequest = async (messages: Message[]): Promise<string> =>
 };
 
 export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse
+  req: Request,
+  res: Response
 ) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
