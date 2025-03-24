@@ -60,8 +60,8 @@
     ],
     "category": "Featured",
     "originalCategory": "Chrome Extensions",
-    "github": "https://github.com/Jomaguy/chat-genius",
-    "videoWalkthrough": "https://www.youtube.com/watch?v=IK9HRwu5oec&t=5s",
+    "github": null,
+    "videoWalkthrough": "https://www.youtube.com/watch?v=IK9HRwu5oec",
     "details": "Experience the future of professional communication with AI-assisted message composition that understands context, maintains professionalism, and helps you communicate more effectively on LinkedIn.",
     "buttons": [
       {
@@ -135,7 +135,7 @@
     "originalCategory": "Web Apps",
     "link": null,
     "github": "https://github.com/Jomaguy/euler-ai",
-    "videoWalkthrough": null
+    "videoWalkthrough": "https://www.youtube.com/watch?v=Zk0ZGRtNH_s"
   },
   {
     "id": 9,
