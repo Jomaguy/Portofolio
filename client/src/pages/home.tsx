@@ -17,7 +17,7 @@ import { getQueryFn } from "@/lib/queryClient";
 
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | "All">("Featured");
-  const categories: (ProjectCategory | "All")[] = ["Featured", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "All"];
+  const categories: (ProjectCategory | "All")[] = ["Featured", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "Open Source Contributions", "All"];
 
   // Fetch projects directly from the public data file instead of the API
   const { data: projects = [], isLoading } = useQuery<Project[]>({
@@ -32,8 +32,12 @@ export default function Home() {
           return project.category === "Featured";
         } else {
           // Show project if either its category matches OR if it's a Featured project with matching originalCategory
+          // Also show Web Apps in Open Source Contributions tab for Puter project specifically
           return project.category === selectedCategory || 
-                (project.category === "Featured" && project.originalCategory === selectedCategory);
+                (project.category === "Featured" && 
+                 (project.originalCategory === selectedCategory ||
+                  // Special case for Puter project to also appear in Web Apps tab
+                  (project.id === 10 && selectedCategory === "Web Apps")));
         }
       });
 
