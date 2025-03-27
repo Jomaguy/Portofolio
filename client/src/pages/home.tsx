@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import profileImage from "../assets/images/profile.jpg";
 import {
   Card,
@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { type Project, type ProjectCategory } from "@shared/schema";
-import { Github, Link as LinkIcon } from "lucide-react";
+import { Github, Link as LinkIcon, Trophy, X, Award, GraduationCap, Medal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -18,6 +18,7 @@ import { getQueryFn } from "@/lib/queryClient";
 export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState<ProjectCategory | "All">("Featured");
   const categories: (ProjectCategory | "All")[] = ["Featured", "Web Apps", "Mobile Apps", "Chrome Extensions", "Cybersecurity", "Open Source Contributions", "All"];
+  const [honorsAwardsOpen, setHonorsAwardsOpen] = useState(false);
 
   // Fetch projects directly from the public data file instead of the API
   const { data: projects = [], isLoading } = useQuery<Project[]>({
@@ -44,7 +45,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center">
       {/* Profile Section */}
-      <div className="flex w-full flex-col items-center justify-start pt-12 mb-12">
+      <div className="flex w-full flex-col items-center justify-start pt-12 mb-12 relative overflow-visible">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -52,12 +53,184 @@ export default function Home() {
           className="container px-4 md:px-6 max-w-5xl"
         >
           <div className="flex flex-col items-center space-y-6 text-center">
-            <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-primary mb-2 shadow-lg">
-              <img
-                src={profileImage}
-                alt="Jonathan Mahrt Guyou"
-                className="w-full h-full object-cover"
-              />
+            <div className="flex items-center justify-center relative w-full">
+              {/* Button to toggle honors and awards panel */}
+              <Button
+                variant="outline"
+                className="fixed left-4 top-[120px] flex items-center justify-center h-12 pl-8 pr-6 rounded-full border-2 border-primary hover:bg-muted/50 text-md font-medium z-30"
+                onClick={() => setHonorsAwardsOpen(!honorsAwardsOpen)}
+              >
+                <Trophy className="h-5 w-5 mr-2" />
+                Honors & Awards
+              </Button>
+              
+              {/* Custom overlay for honors and awards that doesn't block interaction */}
+              <AnimatePresence>
+                {honorsAwardsOpen && (
+                  <motion.div 
+                    initial={{ x: -300 }}
+                    animate={{ x: 0 }}
+                    exit={{ x: -300 }}
+                    transition={{ type: "spring", damping: 30, stiffness: 300 }}
+                    className="fixed left-0 top-0 h-screen w-[350px] bg-background/95 backdrop-blur-sm border-r-2 border-primary shadow-lg z-20 overflow-y-auto"
+                    onClick={(e) => e.stopPropagation()} // Prevent clicks from closing the panel
+                  >
+                    <div className="p-4 flex justify-between items-center border-b mb-4">
+                      <h2 className="text-2xl font-bold flex items-center">
+                        <Trophy className="h-5 w-5 mr-2 text-primary" />
+                        Honors & Awards
+                      </h2>
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8" 
+                        onClick={() => setHonorsAwardsOpen(false)}
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    
+                    {/* Custom honors and awards content without Sheet components */}
+                    <div className="px-4 pb-8">
+                      <div className="space-y-8">
+                        {/* Academic Honors */}
+                        <section>
+                          <h2 className="text-xl font-semibold mb-3 flex items-center">
+                            <GraduationCap className="h-5 w-5 mr-2 text-primary" />
+                            Academic Achievements
+                          </h2>
+                          <ul className="space-y-3 pl-2">
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Dean's List (8 Semesters)</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University, 2020-2023</span>
+                              <span className="text-sm text-muted-foreground">GPA of 3.5 or higher while taking at least 12 credits</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Master of Science with Distinction</span>
+                              <span className="text-sm text-muted-foreground">Computer Science, GPA: 3.62</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">CAA Commissioners Academic Honor Roll</span>
+                              <span className="text-sm text-muted-foreground">2020-2023 (5 times)</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Hofstra Athletic Directors Scholars Academic Honor Roll</span>
+                              <span className="text-sm text-muted-foreground">2021-2023 (3 times)</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">ITA Scholar-Athlete</span>
+                              <span className="text-sm text-muted-foreground">Intercollegiate Tennis Association, 2021 & 2023</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">SAT Score: 1440</span>
+                              <span className="text-sm text-muted-foreground">97th percentile nationally, 2018</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">AP Scholar</span>
+                              <span className="text-sm text-muted-foreground">CollegeBoard, 2018</span>
+                              <span className="text-sm text-muted-foreground">Score of 3 or higher on three AP exams, average score of 5</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">High School Honors</span>
+                              <span className="text-sm text-muted-foreground">Rafa Nadal Academy, 2018</span>
+                            </li>
+                          </ul>
+                        </section>
+
+                        {/* Athletic Honors */}
+                        <section>
+                          <h2 className="text-xl font-semibold mb-3 flex items-center">
+                            <Trophy className="h-5 w-5 mr-2 text-primary" />
+                            Athletic Honors
+                          </h2>
+                          <ul className="space-y-3 pl-2">
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Team Captain, Division 1 Men's Tennis Team</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University, 2022-2024 (2 seasons)</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Nick Colleluori Unsung Hero Award Nominee</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University, May 2024</span>
+                              <span className="text-sm text-muted-foreground">Recognizes student-athletes who help their teams achieve success in ways not measured by statistics</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Team Pride Award</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University, May 2023 & May 2024</span>
+                              <span className="text-sm text-muted-foreground">Honors student-athletes who are selfless and always put their team first</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Strength and Conditioning Athlete of the Year</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University, May 2023</span>
+                              <span className="text-sm text-muted-foreground">For outstanding performance and commitment to strength and conditioning</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Strength and Conditioning Athlete of the Year Nominee</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University, May 2022</span>
+                              <span className="text-sm text-muted-foreground">One of four finalists for the award</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">ITA Northeast Super Regionals Qualifier</span>
+                              <span className="text-sm text-muted-foreground">Intercollegiate Tennis Association, October 2023</span>
+                              <span className="text-sm text-muted-foreground">First qualifier in Hofstra tennis history to the Super Regionals held at Princeton</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">ITA Northeast Regionals Qualifier</span>
+                              <span className="text-sm text-muted-foreground">Intercollegiate Tennis Association, October 2022 & 2023</span>
+                              <span className="text-sm text-muted-foreground">Tournament featuring top men's players across the Northeast region</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Academic All-Conference Team</span>
+                              <span className="text-sm text-muted-foreground">Colonial Athletic Association, 2022-2023</span>
+                            </li>
+                          </ul>
+                        </section>
+
+                        {/* Professional Recognition */}
+                        <section>
+                          <h2 className="text-xl font-semibold mb-3 flex items-center">
+                            <Medal className="h-5 w-5 mr-2 text-primary" />
+                            Professional Recognition & Leadership
+                          </h2>
+                          <ul className="space-y-3 pl-2">
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Digital Remedy Venture Challenge Finalist</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University, May 2022 & May 2023</span>
+                              <span className="text-sm text-muted-foreground">Presented BoJo entrepreneurial venture twice as finalist</span>
+                            </li>
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Colonel E. David Wojcik, Jr Leadership Academy</span>
+                              <span className="text-sm text-muted-foreground">Hofstra University Athletics, September 2022</span>
+                              <span className="text-sm text-muted-foreground">Selected for student-athlete leadership and mentorship program</span>
+                            </li>
+                          </ul>
+                        </section>
+
+                        {/* Memberships & Affiliations */}
+                        <section>
+                          <h2 className="text-xl font-semibold mb-3 flex items-center">
+                            <Award className="h-5 w-5 mr-2 text-primary" />
+                            Memberships & Affiliations
+                          </h2>
+                          <ul className="space-y-3 pl-2">
+                            <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
+                              <span className="font-medium">Theta Tau Professional Engineering Fraternity</span>
+                              <span className="text-sm text-muted-foreground">Member, 2021-2024</span>
+                            </li>
+                          </ul>
+                        </section>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              <div className="w-40 h-40 rounded-full overflow-hidden border-4 border-primary mb-2 shadow-lg">
+                <img
+                  src={profileImage}
+                  alt="Jonathan Mahrt Guyou"
+                  className="w-full h-full object-cover"
+                />
+              </div>
             </div>
             <div className="space-y-3">
               <h1 className="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl lg:text-8xl/none">

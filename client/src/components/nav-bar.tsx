@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Github, Linkedin } from "lucide-react";
 import { ContactFormModal } from "./contact-form-modal";
 import { ResumeModal } from "./resume-modal";
+import { HonorsAwardsModal } from "./honors-awards-modal";
 
 /**
  * Type definition for navigation items.
@@ -22,6 +23,7 @@ type NavRoute =
  */
 const rightRoutes: NavRoute[] = [
   { id: "resume-modal", label: "Resume" },
+  { id: "honors-awards-modal", label: "Honors & Awards" },
   { id: "contact-modal", label: "Contact Me" }
 ];
 
@@ -39,6 +41,7 @@ export function NavBar() {
   const [open, setOpen] = useState(false);  // Mobile menu state
   const [contactModalOpen, setContactModalOpen] = useState(false);  // Contact form modal state
   const [resumeModalOpen, setResumeModalOpen] = useState(false);  // Resume modal state
+  const [honorsAwardsModalOpen, setHonorsAwardsModalOpen] = useState(false);  // Honors & Awards modal state
 
   /**
    * Handles clicks on navigation items.
@@ -54,13 +57,16 @@ export function NavBar() {
     } else if (item.id === "resume-modal") {
       setResumeModalOpen(true);
       return true; // Prevent default navigation
+    } else if (item.id === "honors-awards-modal") {
+      setHonorsAwardsModalOpen(true);
+      return true; // Prevent default navigation
     }
     return false; // Allow default navigation
   };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-32 items-center px-10">
+      <div className="flex h-24 items-center px-10">
         {/* Logo/Brand section - Links to home page */}
         <div className="flex-none mr-16">
           <Link href="/">
@@ -183,6 +189,7 @@ export function NavBar() {
       {/* Modals */}
       <ContactFormModal open={contactModalOpen} onOpenChange={setContactModalOpen} />
       <ResumeModal open={resumeModalOpen} onOpenChange={setResumeModalOpen} />
+      <HonorsAwardsModal open={honorsAwardsModalOpen} onOpenChange={setHonorsAwardsModalOpen} />
     </header>
   );
 }
