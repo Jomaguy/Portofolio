@@ -26,7 +26,7 @@ export const insertProjectSchema = createInsertSchema(projects);
 export type InsertProject = z.infer<typeof insertProjectSchema>;
 export type Project = typeof projects.$inferSelect;
 
-export type ProjectCategory = "Featured" | "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Cybersecurity" | "Open Source Contributions";
+export type ProjectCategory = "Featured" | "Web Apps" | "Mobile Apps" | "Chrome Extensions" | "Cybersecurity" | "Open Source Contributions" | "Operating System";
 
 // User types (for backward compatibility)
 export interface User {

@@ -5,6 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Github, Linkedin } from "lucide-react";
 import { ContactFormModal } from "./contact-form-modal";
 import { ResumeModal } from "./resume-modal";
+import { HonorsAwardsModal } from "./honors-awards-modal";
 
 /**
  * Type definition for navigation items.
@@ -39,6 +40,7 @@ export function NavBar() {
   const [open, setOpen] = useState(false);  // Mobile menu state
   const [contactModalOpen, setContactModalOpen] = useState(false);  // Contact form modal state
   const [resumeModalOpen, setResumeModalOpen] = useState(false);  // Resume modal state
+  const [honorsAwardsModalOpen, setHonorsAwardsModalOpen] = useState(false);  // Honors & Awards modal state
 
   /**
    * Handles clicks on navigation items.
@@ -54,13 +56,16 @@ export function NavBar() {
     } else if (item.id === "resume-modal") {
       setResumeModalOpen(true);
       return true; // Prevent default navigation
+    } else if (item.id === "honors-awards-modal") {
+      setHonorsAwardsModalOpen(true);
+      return true; // Prevent default navigation
     }
     return false; // Allow default navigation
   };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-32 items-center px-10">
+      <div className="flex h-24 items-center px-10">
         {/* Logo/Brand section - Links to home page */}
         <div className="flex-none mr-16">
           <Link href="/">
@@ -74,12 +79,12 @@ export function NavBar() {
         {/* Social media links - Hidden on mobile */}
         <div className="hidden md:flex items-center mr-8">
           <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer" className="mr-4">
-            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
               <Github className="h-8 w-8" />
             </Button>
           </a>
           <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer" className="mr-8">
-            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
               <Linkedin className="h-8 w-8" />
             </Button>
           </a>
@@ -104,7 +109,7 @@ export function NavBar() {
               <button
                 key={'id' in route ? route.id : ''}
                 onClick={() => handleNavItemClick(route)}
-                className="mr-6 flex items-center justify-center h-16 px-8 rounded-full border-2 transition-colors text-foreground/60 border-muted hover:bg-muted/50 text-xl"
+                className="mr-6 flex items-center justify-center h-16 px-8 rounded-full border-2 border-primary transition-colors text-foreground hover:bg-muted/50 text-xl"
               >
                 {route.label}
               </button>
@@ -150,7 +155,7 @@ export function NavBar() {
                   ) : (
                     <button
                       key={'id' in route ? route.id : ''}
-                      className="text-3xl px-6 py-4 rounded-full border-2 inline-block text-foreground/60 border-muted hover:bg-muted/50"
+                      className="text-3xl px-6 py-4 rounded-full border-2 border-primary inline-block text-foreground hover:bg-muted/50"
                       onClick={() => {
                         handleNavItemClick(route);
                         setOpen(false);
@@ -164,12 +169,12 @@ export function NavBar() {
                 {/* Social links in mobile menu */}
                 <div className="flex space-x-6 pt-6">
                   <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
                       <Github className="h-9 w-9" />
                     </Button>
                   </a>
                   <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
                       <Linkedin className="h-9 w-9" />
                     </Button>
                   </a>
@@ -183,6 +188,7 @@ export function NavBar() {
       {/* Modals */}
       <ContactFormModal open={contactModalOpen} onOpenChange={setContactModalOpen} />
       <ResumeModal open={resumeModalOpen} onOpenChange={setResumeModalOpen} />
+      <HonorsAwardsModal open={honorsAwardsModalOpen} onOpenChange={setHonorsAwardsModalOpen} />
     </header>
   );
 }

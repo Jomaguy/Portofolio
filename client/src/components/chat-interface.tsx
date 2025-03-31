@@ -283,6 +283,7 @@ export function ChatInterface() {
       The website has a single-page design with the following sections:
       - Home: The main page featuring Jonathan's profile and all his projects
       - Resume: Available through the "Resume" button in the navigation bar (opens a modal)
+      - Honors & Awards: Available on the side of the portfolio, showcasing Jonathan's achievements
       - Contact: Available through the "Contact Me" button in the navigation bar (opens a contact form)
       
       Projects are categorized as:
@@ -524,7 +525,7 @@ export function ChatInterface() {
                   <span className="text-5xl mb-4" role="img" aria-label="Welcome">👋</span>
                   <h4 className="text-2xl font-medium mb-2" style={{ fontSize: '1.5rem' }}>Welcome to the conversation!</h4>
                   <p className="text-gray-500 dark:text-gray-400 max-w-xs text-xl" style={{ fontSize: '1.25rem' }}>
-                    I'm Albert, Jonathan's AI butler. How may I assist you today?
+                    I'm Albert, Jonathan's AI butler. How may I assist you today? You can also view Jonathan's achievements in the Honors & Awards section on the side.
                   </p>
                 </div>
               ) : (
