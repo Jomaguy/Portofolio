@@ -23,7 +23,6 @@ type NavRoute =
  */
 const rightRoutes: NavRoute[] = [
   { id: "resume-modal", label: "Resume" },
-  { id: "honors-awards-modal", label: "Honors & Awards" },
   { id: "contact-modal", label: "Contact Me" }
 ];
 
@@ -80,12 +79,12 @@ export function NavBar() {
         {/* Social media links - Hidden on mobile */}
         <div className="hidden md:flex items-center mr-8">
           <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer" className="mr-4">
-            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
               <Github className="h-8 w-8" />
             </Button>
           </a>
           <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer" className="mr-8">
-            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+            <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
               <Linkedin className="h-8 w-8" />
             </Button>
           </a>
@@ -110,7 +109,7 @@ export function NavBar() {
               <button
                 key={'id' in route ? route.id : ''}
                 onClick={() => handleNavItemClick(route)}
-                className="mr-6 flex items-center justify-center h-16 px-8 rounded-full border-2 transition-colors text-foreground/60 border-muted hover:bg-muted/50 text-xl"
+                className="mr-6 flex items-center justify-center h-16 px-8 rounded-full border-2 border-primary transition-colors text-foreground hover:bg-muted/50 text-xl"
               >
                 {route.label}
               </button>
@@ -156,7 +155,7 @@ export function NavBar() {
                   ) : (
                     <button
                       key={'id' in route ? route.id : ''}
-                      className="text-3xl px-6 py-4 rounded-full border-2 inline-block text-foreground/60 border-muted hover:bg-muted/50"
+                      className="text-3xl px-6 py-4 rounded-full border-2 border-primary inline-block text-foreground hover:bg-muted/50"
                       onClick={() => {
                         handleNavItemClick(route);
                         setOpen(false);
@@ -170,12 +169,12 @@ export function NavBar() {
                 {/* Social links in mobile menu */}
                 <div className="flex space-x-6 pt-6">
                   <a href="https://github.com/Jomaguy" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
                       <Github className="h-9 w-9" />
                     </Button>
                   </a>
                   <a href="https://www.linkedin.com/in/jonathan-mahrt-guyou/" target="_blank" rel="noopener noreferrer">
-                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 hover:bg-muted/50">
+                    <Button variant="outline" size="icon" className="h-16 w-16 rounded-full border-2 border-primary hover:bg-muted/50">
                       <Linkedin className="h-9 w-9" />
                     </Button>
                   </a>

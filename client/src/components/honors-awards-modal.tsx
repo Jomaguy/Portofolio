@@ -6,6 +6,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Award, Trophy, GraduationCap, Medal } from "lucide-react";
+import { useCallback } from "react";
+
+// Add CSS module import for global styles
+import "@/styles/scrollbar-hide.css";
 
 interface HonorsAwardsModalProps {
   open: boolean;
@@ -13,16 +17,31 @@ interface HonorsAwardsModalProps {
 }
 
 export function HonorsAwardsModal({ open, onOpenChange }: HonorsAwardsModalProps) {
+  // Prevent scroll propagation from the modal to the main page
+  const handleContentScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  }, []);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px] p-8 max-h-[90vh] overflow-y-auto">
+      <DialogContent 
+        className="sm:max-w-[600px] p-8 max-h-[90vh] overflow-hidden"
+        onScroll={handleContentScroll}
+      >
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold tracking-tighter mb-6">Honors & Awards</DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-8">
-          {/* Academic Honors */}
-          <section>
+        <div 
+          className="space-y-8 overflow-y-auto pr-6 scrollbar-hide" 
+          onScroll={handleContentScroll}
+          style={{
+            scrollbarWidth: 'none', /* Firefox */
+            msOverflowStyle: 'none', /* IE and Edge */
+          }}
+        >
+          {/* Academic Honors - with significantly more margin-top */}
+          <section className="mt-20">
             <h2 className="text-xl font-semibold mb-3 flex items-center">
               <GraduationCap className="h-5 w-5 mr-2" />
               Academic Achievements
@@ -30,12 +49,11 @@ export function HonorsAwardsModal({ open, onOpenChange }: HonorsAwardsModalProps
             <ul className="space-y-3">
               <li className="flex flex-col">
                 <span className="font-medium">Dean's List (8 Semesters)</span>
-                <span className="text-sm text-muted-foreground">Hofstra University, 2020-2023</span>
-                <span className="text-sm text-muted-foreground">GPA of 3.5 or higher while taking at least 12 credits</span>
+                <span className="text-sm text-muted-foreground">Hofstra University, 2019-2024</span>
               </li>
               <li className="flex flex-col">
-                <span className="font-medium">Master of Science with Distinction</span>
-                <span className="text-sm text-muted-foreground">Computer Science, GPA: 3.62</span>
+                <span className="font-medium">Master of Science in Computer Science with Distinction</span>
+                <span className="text-sm text-muted-foreground">August 2024</span>
               </li>
               <li className="flex flex-col">
                 <span className="font-medium">CAA Commissioners Academic Honor Roll</span>
@@ -56,7 +74,7 @@ export function HonorsAwardsModal({ open, onOpenChange }: HonorsAwardsModalProps
               <li className="flex flex-col">
                 <span className="font-medium">AP Scholar</span>
                 <span className="text-sm text-muted-foreground">CollegeBoard, 2018</span>
-                <span className="text-sm text-muted-foreground">Score of 3 or higher on three AP exams, average score of 5</span>
+                <span className="text-sm text-muted-foreground">Score 5/5 on three AP exams</span>
               </li>
               <li className="flex flex-col">
                 <span className="font-medium">High School Honors</span>

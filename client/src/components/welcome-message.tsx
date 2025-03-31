@@ -45,6 +45,9 @@ export function WelcomeMessage({ onContinue }: WelcomeMessageProps) {
                 <p className="text-lg mb-3">
                   I'm here to assist you in exploring Jonathan's work and expertise in software engineering. Whether you're interested in his projects, technical skills, or professional background, I'm at your service.
                 </p>
+                <p className="text-lg mb-3">
+                  You can explore Jonathan's achievements in the Honors & Awards section available on the side of the portfolio.
+                </p>
                 <p className="text-lg">
                   You'll find me at the bottom right corner of your screen throughout your visit. Feel free to ask me anything about Jonathan's experience, projects, or how to navigate this portfolio.
                 </p>

@@ -8,34 +8,44 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
+// Import the CSS for hiding scrollbars
+import "@/styles/scrollbar-hide.css";
 
 // Separate component for the content to be reused
 export function HonorsAwardsContent() {
+  // Add a scroll event handler to prevent propagation
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div className="h-full overflow-y-auto pt-12 pb-16 px-6">
+    <div 
+      className="h-full overflow-y-auto pt-12 pb-16 px-6 scrollbar-hide"
+      onScroll={handleScroll}
+    >
       <SheetHeader className="pb-4 border-b mb-6">
         <SheetTitle className="text-3xl font-bold tracking-tighter flex items-center">
           <Award className="h-6 w-6 mr-3 text-primary" />
           Honors & Awards
         </SheetTitle>
       </SheetHeader>
-      
-      <div className="space-y-8">
+
+      {/* Add significant padding to create space below the header */}
+      <div className="pt-20">
         {/* Academic Honors */}
-        <section>
-          <h2 className="text-xl font-semibold mb-3 flex items-center">
+        <section className="mb-10">
+          <h2 className="text-xl font-semibold mb-4 flex items-center">
             <GraduationCap className="h-5 w-5 mr-2 text-primary" />
             Academic Achievements
           </h2>
           <ul className="space-y-3 pl-2">
             <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
               <span className="font-medium">Dean's List (8 Semesters)</span>
-              <span className="text-sm text-muted-foreground">Hofstra University, 2020-2023</span>
-              <span className="text-sm text-muted-foreground">GPA of 3.5 or higher while taking at least 12 credits</span>
+              <span className="text-sm text-muted-foreground">Hofstra University, 2019-2024</span>
             </li>
             <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
-              <span className="font-medium">Master of Science with Distinction</span>
-              <span className="text-sm text-muted-foreground">Computer Science, GPA: 3.62</span>
+              <span className="font-medium">Master of Science in Computer Science with Distinction</span>
+              <span className="text-sm text-muted-foreground">August 2024</span>
             </li>
             <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
               <span className="font-medium">CAA Commissioners Academic Honor Roll</span>
@@ -56,7 +66,7 @@ export function HonorsAwardsContent() {
             <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
               <span className="font-medium">AP Scholar</span>
               <span className="text-sm text-muted-foreground">CollegeBoard, 2018</span>
-              <span className="text-sm text-muted-foreground">Score of 3 or higher on three AP exams, average score of 5</span>
+              <span className="text-sm text-muted-foreground">Score 5/5 on three AP exams</span>
             </li>
             <li className="flex flex-col border-l-2 border-muted pl-3 py-1 hover:border-primary transition-colors">
               <span className="font-medium">High School Honors</span>
@@ -166,7 +176,10 @@ export function HonorsAwardsSheet() {
           Honors & Awards
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-full max-w-md p-0 overflow-y-auto border-r-2 border-primary">
+      <SheetContent 
+        side="left" 
+        className="w-full max-w-md p-0 overflow-hidden border-r-2 border-primary"
+      >
         <HonorsAwardsContent />
       </SheetContent>
     </Sheet>
