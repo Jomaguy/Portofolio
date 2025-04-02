@@ -182,5 +182,37 @@
         "url": "https://docs.puter.com"
       }
     ]
+  },
+  {
+    "id": 11,
+    "title": "Sim Studio",
+    "description": "Built a sophisticated AI chat interface that visualizes agent reasoning and workflow in real-time. The system enables complex AI interactions through a user-friendly chat UI while providing transparency into the decision-making process. Features include file uploads, image generation, and specialized tool usage with the MCP component tracking every step of the agent's actions in a structured, visual format.",
+    "image": "/images/sim-studio-logo.png",
+    "technologies": [
+      "Next.js",
+      "TypeScript",
+      "ReactFlow",
+      "Tailwind CSS"
+    ],
+    "category": "Featured",
+    "originalCategory": "Web Apps",
+    "link": null,
+    "github": "https://github.com/Jomaguy/sim-lab-mcp",
+    "videoWalkthrough": null,
+    "details": "An advanced AI chat interface with visual workflow tracking that makes complex AI interactions transparent and accessible to users.",
+    "buttons": [
+      {
+        "label": "Code",
+        "url": "https://github.com/Jomaguy/Sim-Lab"
+      },
+      {
+        "label": "Walkthrough",
+        "url": "https://www.youtube.com/watch?v=T7hhAqfX4UQ&t=18s"
+      },
+      {
+        "label": "Details",
+        "url": "https://docs.simstudio.ai/docs/introduction"
+      }
+    ]
   }
 ]
