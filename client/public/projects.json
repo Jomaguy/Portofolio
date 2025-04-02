@@ -185,7 +185,7 @@
   },
   {
     "id": 11,
-    "title": "Sim Studio",
+    "title": "Sim Studio - MCP",
     "description": "Built a sophisticated AI chat interface that visualizes agent reasoning and workflow in real-time. The system enables complex AI interactions through a user-friendly chat UI while providing transparency into the decision-making process. Features include file uploads, image generation, and specialized tool usage with the MCP component tracking every step of the agent's actions in a structured, visual format.",
     "image": "/images/sim-studio-logo.png",
     "technologies": [
